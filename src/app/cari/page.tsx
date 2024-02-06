@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
 import { getImageUrl, isOpenInMobile } from "@/utils/ui";
 
 type currentImage = {
@@ -15,6 +15,14 @@ export default function Index() {
   const [currentImage, setCurrentImage] = useState<currentImage>();
   const isOpenMobile = isOpenInMobile();
 
+  function setterCurrentImage(files: FileList) {
+    const imageFile = files[0];
+    const urlImage = getImageUrl(imageFile);
+    setCurrentImage({
+      file: imageFile,
+      url: urlImage,
+    });
+  }
   function handleOpenCamera() {
     if (!refInputCamera) return;
     refInputCamera.current?.click();
@@ -28,16 +36,32 @@ export default function Index() {
   function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
     if (!uploadedFile) return;
-    const imageFile = uploadedFile[0];
-    const urlImage = getImageUrl(imageFile);
-    setCurrentImage({
-      file: imageFile,
-      url: urlImage,
-    });
+    setterCurrentImage(uploadedFile);
+  }
+
+  function handleDragAndDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleFileOnDrop(e: DragEvent<HTMLDivElement>) {
+    handleDragAndDrop(e);
+    const dataTransfer = e.dataTransfer;
+    if (!dataTransfer) return;
+    const files = dataTransfer?.files;
+    setterCurrentImage(files);
   }
 
   return (
-    <div className="min-h-screen p-10 max-w-screen-2xl">
+    <div
+      className="min-h-screen p-10 max-w-screen-2xl border"
+      draggable
+      onDragEnter={handleDragAndDrop}
+      onDragOver={handleDragAndDrop}
+      onDragLeave={handleDragAndDrop}
+      onDrag={handleDragAndDrop}
+      onDrop={handleFileOnDrop}
+    >
       <div className="flex flex-col items-center gap-5">
         <h1 className="text-center">Cari Resep</h1>
         <div className="flex flex-col items-center gap-5">
