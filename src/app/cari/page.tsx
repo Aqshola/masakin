@@ -1,19 +1,91 @@
+"use client";
+
+import Image from "next/image";
+import { ChangeEvent, useRef, useState } from "react";
+import { getImageUrl, isOpenInMobile } from "@/utils/ui";
+
+type currentImage = {
+  file: File;
+  url: string;
+};
+
 export default function Index() {
+  const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
+  const refInputCamera = useRef<HTMLInputElement | null>(null);
+  const [currentImage, setCurrentImage] = useState<currentImage>();
+  const isOpenMobile = isOpenInMobile();
+
+  function handleOpenCamera() {
+    if (!refInputCamera) return;
+    refInputCamera.current?.click();
+  }
+
+  function handleOpenUploadPicture() {
+    if (!refInputPictureHidden.current) return;
+    refInputPictureHidden.current.click();
+  }
+
+  function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
+    const uploadedFile = e.currentTarget.files;
+    if (!uploadedFile) return;
+    const imageFile = uploadedFile[0];
+    const urlImage = getImageUrl(imageFile);
+    setCurrentImage({
+      file: imageFile,
+      url: urlImage,
+    });
+  }
+
   return (
     <div className="min-h-screen p-10 max-w-screen-2xl">
       <div className="flex flex-col items-center gap-5">
         <h1 className="text-center">Cari Resep</h1>
-        <div className="w-72 h-72 flex border justify-center items-center">
-          Upload foto makanan
+        <div className="flex flex-col items-center gap-5">
+          <div className="flex gap-5">
+            {isOpenMobile && (
+              <button className="border p-2" onClick={handleOpenCamera}>
+                Buka Kamera
+              </button>
+            )}
+            <button className="border p-2" onClick={handleOpenUploadPicture}>
+              Upload
+            </button>
+          </div>
+          {isOpenMobile && (
+            <input
+              onChange={handleUploadPicture}
+              ref={refInputCamera}
+              type="file"
+              name="image"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+            />
+          )}
+          <input
+            onChange={handleUploadPicture}
+            type="file"
+            className="hidden"
+            ref={refInputPictureHidden}
+          />
+
+          {currentImage?.url && (
+            <div className="w-72 h-72 flex border justify-center items-center relative">
+              <p>Tes</p>
+              <Image
+                fill
+                src={currentImage.url}
+                alt={currentImage.file.name}
+                className="w-full h-full"
+              />
+            </div>
+          )}
         </div>
+
         <button>Cari</button>
       </div>
 
-      <div className="mt-10 border-t-2 pt-2 flex flex-col items-center gap-5">
-        <h1 className="text-center">Hasil</h1>
-        <div className="w-72 h-72 flex border justify-center items-center">
-          foto makanan
-        </div>
+      <div className="mt-10 pt-2 flex flex-col items-center gap-5">
         <button>Respe makanan aba</button>
         <p>
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorum
