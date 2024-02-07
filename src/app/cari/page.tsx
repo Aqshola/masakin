@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
 import { getImageUrl, isOpenInMobile } from "@/utils/ui";
+import axios from "axios";
 
 type currentImage = {
   file: File;
@@ -13,6 +14,7 @@ export default function Index() {
   const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
   const refInputCamera = useRef<HTMLInputElement | null>(null);
   const [currentImage, setCurrentImage] = useState<currentImage>();
+  const [loading, setLoading] = useState<boolean>(false);
   const isOpenMobile = isOpenInMobile();
 
   function setterCurrentImage(files: FileList) {
@@ -51,6 +53,19 @@ export default function Index() {
     const files = dataTransfer?.files;
     setterCurrentImage(files);
   }
+
+  async function handleSearchMasak() {
+    if (currentImage) {
+      setLoading(true);
+      const data = new FormData();
+      data.set("image", currentImage.file);
+      const res = await axios.post("/api/generative", data);
+      console.log(res, "tes");
+      setLoading(false);
+    }
+  }
+
+  if (loading) return "Loading...";
 
   return (
     <div
@@ -106,7 +121,7 @@ export default function Index() {
           )}
         </div>
 
-        <button>Cari</button>
+        <button onClick={handleSearchMasak}>Cari</button>
       </div>
 
       <div className="mt-10 pt-2 flex flex-col items-center gap-5">
