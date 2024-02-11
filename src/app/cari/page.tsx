@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
 import { getImageUrl, isOpenInMobile } from "@/utils/ui";
 import axios from "axios";
+import { GenerativeResponse } from "@/type/recipe";
 
 type currentImage = {
   file: File;
@@ -15,7 +16,8 @@ export default function Index() {
   const refInputCamera = useRef<HTMLInputElement | null>(null);
   const [currentImage, setCurrentImage] = useState<currentImage>();
   const [loading, setLoading] = useState<boolean>(false);
-  const isOpenMobile = isOpenInMobile();
+  const [dataRecipe, setDataRecipe] = useState<GenerativeResponse>();
+  // const isOpenMobile = isOpenInMobile();
 
   function setterCurrentImage(files: FileList) {
     const imageFile = files[0];
@@ -60,12 +62,10 @@ export default function Index() {
       const data = new FormData();
       data.set("image", currentImage.file);
       const res = await axios.post("/api/generative", data);
-      console.log(res, "tes");
+      setDataRecipe(res.data.generativeResponse);
       setLoading(false);
     }
   }
-
-  if (loading) return "Loading...";
 
   return (
     <div
@@ -81,16 +81,16 @@ export default function Index() {
         <h1 className="text-center">Cari Resep</h1>
         <div className="flex flex-col items-center gap-5">
           <div className="flex gap-5">
-            {isOpenMobile && (
+            {/* {isOpenMobile && (
               <button className="border p-2" onClick={handleOpenCamera}>
                 Buka Kamera
               </button>
-            )}
+            )} */}
             <button className="border p-2" onClick={handleOpenUploadPicture}>
               Upload
             </button>
           </div>
-          {isOpenMobile && (
+          {/* {isOpenMobile && (
             <input
               onChange={handleUploadPicture}
               ref={refInputCamera}
@@ -100,7 +100,7 @@ export default function Index() {
               capture="environment"
               className="hidden"
             />
-          )}
+          )} */}
           <input
             onChange={handleUploadPicture}
             type="file"
@@ -124,28 +124,63 @@ export default function Index() {
         <button onClick={handleSearchMasak}>Cari</button>
       </div>
 
-      <div className="mt-10 pt-2 flex flex-col items-center gap-5">
-        <button>Respe makanan aba</button>
-        <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorum
-          earum voluptatum ad totam ea commodi sint quibusdam quae laborum
-          tenetur qui accusamus, dolor ducimus aspernatur assumenda, deleniti
-          eveniet eum quis. Accusantium voluptate numquam voluptatum. Commodi
-          tempora pariatur eum incidunt? Aperiam nemo alias nesciunt debitis
-          iusto nulla a accusantium. Voluptates, adipisci.
-        </p>
-      </div>
-      <div className="mt-5">
-        <h1>Rekomendasi Makanan Pendamping</h1>
-      </div>
-      <div className="mt-5">
-        <h1>Rekomendasi Makanan Sejenis</h1>
-      </div>
+      {loading && <div>Loading...</div>}
+      {dataRecipe && !loading && (
+        <>
+          <div className="mt-10 pt-2 flex flex-col items-center gap-5">
+            <h1>{dataRecipe.nama_makanan}</h1>
+            <p>{dataRecipe.deskripsi}</p>
+          </div>
+          <div className="flex flex-col gap-5">
+            <h3>Resep</h3>
+            <div>
+              <h5>Bahan-Bahan</h5>
+              <ul className="list-disc list-inside">
+                {dataRecipe.bahan_baku.map((el) => (
+                  <li key={el}>{el}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h5>Langkah Pembuatan</h5>
+              <ul className="list-inside list-decimal">
+                {dataRecipe.langkah_pembuatan.map((el) => (
+                  <li key={el}>{el}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="mt-5">
+            <h5>Rekomendasi Makanan Pendamping</h5>
+            <ul className="list-inside list-disc">
+              {dataRecipe.makanan_pendamping.map((el) => (
+                <li key={el}>{el}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-5">
+            <h5>Rekomendasi Minuman Pendamping</h5>
+            <ul className="list-inside list-disc">
+              {dataRecipe.minuman_pendamping.map((el) => (
+                <li key={el}>{el}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-5">
+            <h1>Rekomendasi Makanan Sejenis</h1>
+            <ul className="list-inside list-disc">
+              {dataRecipe.makanan_mirip.map((el) => (
+                <li key={el}>{el}</li>
+              ))}
+            </ul>
+          </div>
 
-      <div className="mt-5 flex gap-5">
-        <button>Share</button>
-        <button>Simpan</button>
-      </div>
+          <div className="mt-5 flex gap-5">
+            <button>Share</button>
+            <button>Simpan</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

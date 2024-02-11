@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
   const generationConfig = {
-    temperature: 0.65,
+    temperature: 0.3,
     topK: 32,
     topP: 1,
     maxOutputTokens: 12096,
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
   const parts = [
     {
-      text: "Please provide details about this food item, including its  recipe, how to make, list of related foods, description and  if its a drink write list of recommendations for side dishes if not write list of recomendations for drinks. \nprovide the information in Indonesian and write in json format.\n",
+      text: "Please provide details about this food photo, including its recipe with amount, how to make, list of related foods as array, similiar foods as array and  if its a drink write list of recommendations for side dishes if not write list of recomendations for drinks as array. \nprovide the information in Indonesian and always write in json in this format \n{\n  deskripsi\n  makanan_pendamping\n  minuman_pendamping\n  nama_makanan\n  bahan_baku\n  langkah_pembuatan\n makanan_mirip \n}\n",
     },
     {
       inlineData: {
