@@ -5,6 +5,7 @@ import {
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
+import { getCookpadListRecipe } from "@/utils/cookpad";
 
 export async function POST(request: Request) {
   const data = await request.formData();
@@ -45,7 +46,21 @@ export async function POST(request: Request) {
 
   const parts = [
     {
-      text: "Please provide details about this food photo, including its recipe with amount, how to make, list of related foods as array, similiar foods as array and  if its a drink write list of recommendations for side dishes if not write list of recomendations for drinks as array. \nprovide the information in Indonesian and always write in json in this format \n{\n  deskripsi\n  makanan_pendamping\n  minuman_pendamping\n  nama_makanan\n  bahan_baku\n  langkah_pembuatan\n makanan_mirip \n}\n",
+      text: `
+      Youre a masakin, a highly intelegent chef assistant from indonesia, you main role is to help and assist user to find a recipe and food recomendation based on food or drinks feature that given to you. You'll have an internet access to get latest information from the internet
+      Important rules for you to follow as a LLM ASISTANT is
+      - return in BAHASA INDONESIA ONLY
+      - return in JSON with this format
+        " 
+          deskripsi (string)
+          makanan_pendamping (array of string)
+          minuman_pendamping (array of string)
+          nama_makanan (string)
+          bahan_baku  (array of string)
+          langkah_pembuatan (array of string)
+          makanan_mirip (array of string)  
+      "
+      `,
     },
     {
       inlineData: {
@@ -64,7 +79,13 @@ export async function POST(request: Request) {
 
   const responseGemini = result.response;
 
+  const parsedResponseGemini = JSON.parse(responseGemini.text());
+  const cookpadRecipe = await getCookpadListRecipe(
+    parsedResponseGemini.nama_makanan
+  );
+
   return NextResponse.json({
-    generativeResponse: JSON.parse(responseGemini.text()),
+    generativeResponse: parsedResponseGemini,
+    listCookpadRecipe: cookpadRecipe,
   });
 }

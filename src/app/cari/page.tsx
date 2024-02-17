@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, DragEventHandler, useRef, useState } from "react";
-import { getImageUrl, isOpenInMobile } from "@/utils/ui";
+import { ChangeEvent, useRef, useState } from "react";
+import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
+import { CookpadListRecipe } from "@/utils/cookpad";
 
 type currentImage = {
   file: File;
@@ -17,7 +18,9 @@ export default function Index() {
   const [currentImage, setCurrentImage] = useState<currentImage>();
   const [loading, setLoading] = useState<boolean>(false);
   const [dataRecipe, setDataRecipe] = useState<GenerativeResponse>();
-  // const isOpenMobile = isOpenInMobile();
+  const [listCookpadRecipe, setListCookpadRecipe] = useState<
+    CookpadListRecipe[]
+  >([]);
 
   function setterCurrentImage(files: FileList) {
     const imageFile = files[0];
@@ -63,13 +66,14 @@ export default function Index() {
       data.set("image", currentImage.file);
       const res = await axios.post("/api/generative", data);
       setDataRecipe(res.data.generativeResponse);
+      setListCookpadRecipe(res.data.listCookpadRecipe);
       setLoading(false);
     }
   }
 
   return (
     <div
-      className="min-h-screen p-10 max-w-screen-2xl border"
+      className="min-h-screen p-10 max-w-screen-2xl border pb-10"
       draggable
       onDragEnter={handleDragAndDrop}
       onDragOver={handleDragAndDrop}
@@ -77,7 +81,7 @@ export default function Index() {
       onDrag={handleDragAndDrop}
       onDrop={handleFileOnDrop}
     >
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-5 ">
         <h1 className="text-center">Cari Resep</h1>
         <div className="flex flex-col items-center gap-5">
           <div className="flex gap-5">
@@ -171,6 +175,14 @@ export default function Index() {
             <ul className="list-inside list-disc">
               {dataRecipe.makanan_mirip.map((el) => (
                 <li key={el}>{el}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-5">
+            <h1>Rekomendasi Resep dari Cookpad</h1>
+            <ul className="list-inside list-disc">
+              {listCookpadRecipe.map((el) => (
+                <li key={`${el.title}${el}`}>{el.title}</li>
               ))}
             </ul>
           </div>
