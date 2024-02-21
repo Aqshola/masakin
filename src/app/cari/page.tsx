@@ -6,6 +6,8 @@ import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
 import { CookpadListRecipe } from "@/utils/cookpad";
+import Link from "next/link";
+import FloatingButton from "@/components/button/FloatingButton";
 
 type currentImage = {
   file: File;
@@ -73,7 +75,7 @@ export default function Index() {
 
   return (
     <div
-      className="min-h-screen p-10 max-w-screen-2xl border pb-10"
+      className="min-h-screen p-10 max-w-screen-2xl border pb-10 relative"
       draggable
       onDragEnter={handleDragAndDrop}
       onDragOver={handleDragAndDrop}
@@ -81,6 +83,7 @@ export default function Index() {
       onDrag={handleDragAndDrop}
       onDrop={handleFileOnDrop}
     >
+      <FloatingButton/>
       <div className="flex flex-col items-center gap-5 ">
         <h1 className="text-center">Cari Resep</h1>
         <div className="flex flex-col items-center gap-5">
@@ -182,7 +185,11 @@ export default function Index() {
             <h1>Rekomendasi Resep dari Cookpad</h1>
             <ul className="list-inside list-disc">
               {listCookpadRecipe.map((el) => (
-                <li key={`${el.title}${el}`}>{el.title}</li>
+                <li key={`${el.title}${el.url}`}>
+                  <Link href={`/cari${el.url}`}>
+                    {el.title}
+                  </Link>
+                </li>
               ))}
             </ul>
           </div>

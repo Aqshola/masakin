@@ -1,3 +1,4 @@
+import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
 import { load } from "cheerio";
 
 export type CookpadListRecipe = {
@@ -41,9 +42,14 @@ export async function getCookpadRecipe(url: string) {
 
   const render = load(resultData);
 
+
+
   const listIngridients: string[] = [];
   const listSteps: string[] = [];
-  const image = render("#recipe_image").find("img").attr("src");
+
+  const image = render("#recipe_image").find("img").attr("src")||'';
+  const title= render("h1").text()
+  
   render(".ingredient-list li").each((_, element) => {
     const text = render(element).text();
     listIngridients.push(text);
@@ -54,9 +60,15 @@ export async function getCookpadRecipe(url: string) {
     listSteps.push(text);
   });
 
-  return {
-    image,
-    listIngridients,
-    listSteps,
-  };
+  const returObject:CookpadRecipeResponse={
+    img:image,
+    bahan_baku:listIngridients,
+    deskripsi:'',
+    langkah_pembuatan:listSteps,
+    makanan_mirip:[],
+    makanan_pendamping:[],
+    minuman_pendamping:[],
+    nama_makanan:title
+  }
+  return returObject
 }

@@ -7,11 +7,11 @@ type Context = {
     url: string[];
   };
 };
-export async function GET(req: NextApiRequest, context: Context) {
+export async function GET(_:any, context: Context) {
   const { url } = context.params;
   const parsedURL = url.join("/");
 
+
   const result = await getCookpadRecipe(parsedURL);
-  console.log(result);
-  return NextResponse.json(parsedURL);
+  return NextResponse.json(result);
 }

@@ -1,4 +1,4 @@
-export type GenerativeResponse = {
+export interface GenerativeResponse {
   deskripsi: string;
   makanan_pendamping: Array<string>;
   minuman_pendamping: Array<string>;
@@ -7,3 +7,7 @@ export type GenerativeResponse = {
   langkah_pembuatan: Array<string>;
   makanan_mirip: Array<string>;
 };
+
+export interface CookpadRecipeResponse extends GenerativeResponse{
+  img:string
+}

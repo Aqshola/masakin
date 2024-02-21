@@ -1,6 +1,14 @@
-import Image from "next/image";
+"use client";
+
+
+import { initDb } from "@/utils/indexDb";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    void initDb()
+  }, [])
+  
   return (
     <main className="w-full">
       <div className="flex justify-center items-center bg-white min-h-screen flex-col gap-5">
