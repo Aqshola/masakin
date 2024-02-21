@@ -27,28 +27,33 @@ export async function initDb() {
     db.createObjectStore(IDB_STORE_NAME);
   });
 
-  openDB.close()
+  openDB.close();
 }
 
-export async function getDataByKeyIDB(key:string){
-  const dbLocal=await openIDB()
-  const data=await dbLocal.get(IDB_STORE_NAME,key)
+export async function getDataByKeyIDB(key: string) {
+  const dbLocal = await openIDB();
+  const data = await dbLocal.get(IDB_STORE_NAME, key);
 
-  return data
-
+  return data;
 }
 
-export async function insertInDB(value:any,key:any){
-  
-  const dbLocal=await openIDB()
+export async function insertInDB(value: any, key: any) {
+  const dbLocal = await openIDB();
 
-  const checkIfExist=await getDataByKeyIDB(key)
+  const checkIfExist = await getDataByKeyIDB(key);
 
-  if(checkIfExist){
-    console.log("DUPLICATE DATA")
-    return
+  if (checkIfExist) {
+    alert("DUPLICATE DATA");
+    return;
   }
-  
-  dbLocal.add(IDB_STORE_NAME,value,key)
-  dbLocal.close()
+
+  dbLocal.add(IDB_STORE_NAME, { ...value, key }, key);
+  dbLocal.close();
+}
+
+export async function getAllDataIDB() {
+  const dbLocal = await openIDB();
+  const allData = await dbLocal.getAll(IDB_STORE_NAME);
+
+  return allData;
 }
