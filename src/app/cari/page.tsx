@@ -8,6 +8,7 @@ import { GenerativeResponse } from "@/type/recipe";
 import { CookpadListRecipe } from "@/utils/cookpad";
 import Link from "next/link";
 import FloatingButton from "@/components/button/FloatingButton";
+import { insertInDB } from "@/utils/indexDb";
 
 type currentImage = {
   file: File;
@@ -73,6 +74,13 @@ export default function Index() {
     }
   }
 
+  async function handleSaveRecipe() {
+    await insertInDB(
+      { ...dataRecipe, source: "generative", img: currentImage?.file },
+      `generative-${dataRecipe?.nama_makanan.replace(" ", "-")}`
+    );
+  }
+
   return (
     <div
       className="min-h-screen p-10 max-w-screen-2xl border pb-10 relative"
@@ -83,7 +91,7 @@ export default function Index() {
       onDrag={handleDragAndDrop}
       onDrop={handleFileOnDrop}
     >
-      <FloatingButton/>
+      {dataRecipe && !loading && <FloatingButton onClick={handleSaveRecipe} />}
       <div className="flex flex-col items-center gap-5 ">
         <h1 className="text-center">Cari Resep</h1>
         <div className="flex flex-col items-center gap-5">
@@ -186,9 +194,7 @@ export default function Index() {
             <ul className="list-inside list-disc">
               {listCookpadRecipe.map((el) => (
                 <li key={`${el.title}${el.url}`}>
-                  <Link href={`/cari${el.url}`}>
-                    {el.title}
-                  </Link>
+                  <Link href={`/cari${el.url}`}>{el.title}</Link>
                 </li>
               ))}
             </ul>

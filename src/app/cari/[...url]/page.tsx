@@ -1,6 +1,7 @@
 "use client";
 import FloatingButton from '@/components/button/FloatingButton';
 import { CookpadRecipeResponse, GenerativeResponse } from '@/type/recipe';
+import { insertInDB } from '@/utils/indexDb';
 import { fetcher } from '@/utils/network';
 import Image from 'next/image';
 import useSWR from 'swr'
@@ -14,14 +15,22 @@ export default function Index({params}:Param){
     const parsedURL=params.url.join("/")
     
     const { data, error, isLoading } = useSWR<CookpadRecipeResponse>(`/api/cookpad/${parsedURL}`, fetcher)
-    console.log(data)
+
+    async function handleSaveRecipe(){
+        await insertInDB({...data,source:'cookpad'},`cookpad-${parsedURL}`)
+    }
+    
  
+
+
+
+
     if (error) return <div>failed to load</div>
     if (isLoading) return <div>loading...</div>
     if(!data) return 'no Data'
     return (
         <div className='min-h-screen max-w-screen-2xl mx-auto p-10 relative'>
-            <FloatingButton/>
+            <FloatingButton onClick={handleSaveRecipe}/>
             <h1 className='text-center'>{data?.nama_makanan}</h1>
             
             <div className='flex w-full h-[400px] relative mx-auto mt-5'>
