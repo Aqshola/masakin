@@ -22,12 +22,41 @@ export async function getCookpadListRecipe(food: string) {
       .replace(/\n/g, "")
       .replace(/[0-9.]/g, " ")
       .trimStart();
-    const url = list.attr("href");
+    const url = list.attr("href") || "";
 
     listRecipe.push({
-      title: title,
-      url: `https://cookpad.com${url}`,
+      title,
+      url,
     });
   });
   return listRecipe;
+}
+export async function getCookpadRecipe(url: string) {
+  const result = await fetch(`https://cookpad.com/${url}`, {
+    headers: {
+      "content-type": "text/html;charset=UTF-8",
+    },
+  });
+  const resultData = await result.text();
+
+  const render = load(resultData);
+
+  const listIngridients: string[] = [];
+  const listSteps: string[] = [];
+  const image = render("#recipe_image").find("img").attr("src");
+  render(".ingredient-list li").each((_, element) => {
+    const text = render(element).text();
+    listIngridients.push(text);
+  });
+
+  render("#steps li").each((_, element) => {
+    const text = render(element).text();
+    listSteps.push(text);
+  });
+
+  return {
+    image,
+    listIngridients,
+    listSteps,
+  };
 }
