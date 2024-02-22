@@ -1,5 +1,6 @@
 "use client";
 import { getAllDataIDB } from "@/utils/indexDb";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -20,9 +21,9 @@ export default function Index() {
         <h1 className="text-2xl font-medium">Daftar Resep</h1>
         <div className="mt-10 flex flex-col gap-3">
           {dataBookmark.map((el, idx) => (
-            <div className="border p-2 rounded" key={el.key}>
-              {el.nama_makanan}
-            </div>
+            <Link href={`/bookmark/${el.key}`} key={el.key}>
+              <div className="border p-2 rounded">{el.nama_makanan}</div>
+            </Link>
           ))}
         </div>
       </div>
