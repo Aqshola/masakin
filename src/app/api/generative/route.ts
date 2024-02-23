@@ -1,13 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
 import { getCookpadListRecipe } from "@/utils/cookpad";
+import { getIpRequest } from "@/utils/network";
+import { redisClient } from "@/libs/redis";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const ip = getIpRequest(request);
+
+  const redis = redisClient;
+
+  redis.set(`${ip}-loading`, "Initialized Data");
   const data = await request.formData();
   const imageData = data.get("image") as File;
   const byteImage = await imageData.arrayBuffer();
@@ -15,6 +22,7 @@ export async function POST(request: Request) {
   const API_KEY = process.env.GEMINI_KEY || "";
   const MODEL_NAME = "gemini-pro-vision";
 
+  redis.set(`${ip}-loading`, "Identifying Target");
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -80,10 +88,13 @@ export async function POST(request: Request) {
   const responseGemini = result.response;
 
   const parsedResponseGemini = JSON.parse(responseGemini.text());
+
+  redis.set(`${ip}-loading`, "Get Cookpad Recipe");
   const cookpadRecipe = await getCookpadListRecipe(
     parsedResponseGemini.nama_makanan
   );
 
+  redis.set(`${ip}-loading`, "");
   return NextResponse.json({
     generativeResponse: parsedResponseGemini,
     listCookpadRecipe: cookpadRecipe,

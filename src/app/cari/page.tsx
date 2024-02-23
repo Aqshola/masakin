@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
@@ -24,6 +24,13 @@ export default function Index() {
   const [listCookpadRecipe, setListCookpadRecipe] = useState<
     CookpadListRecipe[]
   >([]);
+
+  useEffect(() => {
+    const eventSource = new EventSource("/api/loading");
+    eventSource.onmessage = () => {
+      console.log("called");
+    };
+  }, []);
 
   function setterCurrentImage(files: FileList) {
     const imageFile = files[0];
