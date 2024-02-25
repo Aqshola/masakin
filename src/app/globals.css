@@ -38,3 +38,13 @@
   border: 1.334vh solid #111;
   border-radius: 4.5vh;
 }
+
+.bottomnav-shadow {
+  box-shadow: 0px -15px 15px -3px rgba(0, 0, 0, 0.089);
+}
+
+.transparent-bg {
+  transform: rotate(180deg);
+  width: 100%;
+  background: radial-gradient(70px 70px at bottom, transparent 50%, white 51%);
+}

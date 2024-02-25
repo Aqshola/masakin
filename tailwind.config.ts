@@ -24,6 +24,7 @@ const config: Config = {
           purple: "#dcb2eb",
           green: "#acd188",
           softblack: "#2A2A2A",
+          softwhite: "#F2F3FB",
         },
       },
     },
