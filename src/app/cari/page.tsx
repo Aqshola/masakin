@@ -165,9 +165,25 @@ export default function Index() {
         </button> */}
 
         <div className="mt-5 flex flex-col gap-5">
-          <h2 className="text-3xl font-semibold text-primary-softblack bg-primary-orange p-2 bg-opacity-65 rounded">
-            Soto Ayam
-          </h2>
+          <div className="bg-primary-orange p-2 bg-opacity-65 rounded flex justify-between text-primary-softblack items-start">
+            <h2 className="text-3xl font-semibold  flex-wrap">Soto Ayam</h2>
+            <button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-7 h-7"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                />
+              </svg>
+            </button>
+          </div>
 
           {/* DESC */}
           <div className="bg-white p-2 rounded">
