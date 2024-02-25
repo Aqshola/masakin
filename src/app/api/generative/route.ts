@@ -6,15 +6,19 @@ import {
   HarmBlockThreshold,
 } from "@google/generative-ai";
 import { getCookpadListRecipe } from "@/utils/cookpad";
-import { getIpRequest } from "@/utils/network";
+import { getIpRequest, setLoadingState } from "@/utils/network";
 import { redisClient } from "@/libs/redis";
 
 export async function POST(request: NextRequest) {
   const ip = getIpRequest(request);
 
   const redis = redisClient;
+  const keyRedisLoading = `${ip}-loading`;
 
-  redis.set(`${ip}-loading`, "10");
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 10,
+    state: "Getting data",
+  });
   const data = await request.formData();
   const imageData = data.get("image") as File;
   const byteImage = await imageData.arrayBuffer();
@@ -22,7 +26,10 @@ export async function POST(request: NextRequest) {
   const API_KEY = process.env.GEMINI_KEY || "";
   const MODEL_NAME = "gemini-pro-vision";
 
-  redis.set(`${ip}-loading`, "20");
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 30,
+    state: "Initiate Generative",
+  });
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
@@ -79,30 +86,42 @@ export async function POST(request: NextRequest) {
     { text: "\n" },
   ];
 
-  redis.set(`${ip}-loading`, "50");
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 50,
+    state: "Generate content",
+  });
   const result = await model.generateContent({
     contents: [{ role: "user", parts }],
     generationConfig,
     safetySettings,
   });
 
-  redis.set(`${ip}-loading`, '70');
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 60,
+    state: "Finish generate",
+  });
 
   const responseGemini = result.response;
 
   const parsedResponseGemini = JSON.parse(responseGemini.text());
 
-  redis.set(`${ip}-loading`, "80");
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 70,
+    state: "Generate cookpad recomendation",
+  });
   const cookpadRecipe = await getCookpadListRecipe(
     parsedResponseGemini.nama_makanan
   );
 
-  
+  setLoadingState(redis, keyRedisLoading, {
+    percent: 100,
+    state: "Finish process",
+  });
   setTimeout(() => {
-    redis.set(`${ip}-loading`, "100");
-  }, 500);
-  setTimeout(() => {
-    redis.set(`${ip}-loading`, "0");
+    setLoadingState(redis, keyRedisLoading, {
+      percent: 0,
+      state: "",
+    });
   }, 1500);
   return NextResponse.json({
     generativeResponse: parsedResponseGemini,
