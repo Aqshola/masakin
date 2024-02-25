@@ -28,7 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={clsx(poppinsFont.className, "max-w-screen-2xl mx-auto")}>
+      <body
+        className={clsx(
+          poppinsFont.className,
+          "max-w-screen-2xl mx-auto min-h-screen"
+        )}
+      >
         {children}
       </body>
     </html>
