@@ -6,8 +6,9 @@ export interface GenerativeResponse {
   bahan_baku: Array<string>;
   langkah_pembuatan: Array<string>;
   makanan_mirip: Array<string>;
-};
+  found?: string;
+}
 
-export interface CookpadRecipeResponse extends GenerativeResponse{
-  img:string
+export interface CookpadRecipeResponse extends GenerativeResponse {
+  img: string;
 }

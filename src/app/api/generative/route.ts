@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
           bahan_baku  (array of string)
           langkah_pembuatan (array of string)
           makanan_mirip (array of string)  
+          status (string found or not_found)
       "
       `,
     },
