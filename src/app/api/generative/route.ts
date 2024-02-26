@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
   setLoadingState(redis, keyRedisLoading, {
     percent: 70,
-    state: "Generate cookpad recomendation",
+    state: "Generate cookpad",
   });
   const cookpadRecipe = await getCookpadListRecipe(
     parsedResponseGemini.nama_makanan

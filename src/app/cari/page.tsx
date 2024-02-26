@@ -23,18 +23,25 @@ type currentImage = {
 };
 
 export default function Index() {
+  // REF
   const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
   const refInputCamera = useRef<HTMLInputElement | null>(null);
+
+  // DATA STATE
+  const [dataRecipe, setDataRecipe] = useState<GenerativeResponse>();
+  const [listCookpadRecipe, setListCookpadRecipe] = useState<
+    CookpadListRecipe[]
+  >([]);
   const [currentImage, setCurrentImage] = useState<currentImage>();
+
+  // UI STATE
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingState, setLoadingState] = useState({
     percent: 0,
     state: "",
   });
-  const [dataRecipe, setDataRecipe] = useState<GenerativeResponse>();
-  const [listCookpadRecipe, setListCookpadRecipe] = useState<
-    CookpadListRecipe[]
-  >([]);
+  const [showFormImage, setShowFormImage] = useState<boolean>(true);
+  const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
 
   useEffect(() => {
     let eventSource: EventSource;
@@ -87,11 +94,20 @@ export default function Index() {
   function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
     if (!uploadedFile) return;
+
     setterCurrentImage(uploadedFile);
+    setShowFormImage(false);
+    setShowButtonSearch(true);
+  }
+
+  function handleToggleShowFormImage() {
+    if (!currentImage) return;
+    setShowFormImage(!showFormImage);
   }
 
   async function handleSearchMasak() {
     if (currentImage) {
+      setShowButtonSearch(false);
       setLoading(true);
       setLoadingState({ percent: 0, state: "Starting" });
       const data = new FormData();
@@ -117,25 +133,34 @@ export default function Index() {
         </h1>
 
         {/* IMAGE */}
-        <div className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden">
-          {!currentImage && (
-            <div className="flex flex-col gap-5">
-              <button
-                className="text-sm font-semibold flex gap-2 items-center"
-                onClick={handleOpenUploadPicture}
-              >
-                <FolderIcon className="w-5 h-5" />
-                <span>Unggah foto</span>
-              </button>
-              <button className="text-sm font-semibold flex gap-2 items-center">
-                <CameraIcon className="w-5 h-5" />
-                <span>Ambil foto</span>
-              </button>
+        <div
+          className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
+          onClick={handleToggleShowFormImage}
+        >
+          {showFormImage && (
+            <div
+              className={
+                "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
+              }
+            >
+              <div className="flex flex-col gap-5">
+                <button
+                  className="text-sm font-semibold flex gap-2 items-center"
+                  onClick={handleOpenUploadPicture}
+                >
+                  <FolderIcon className="w-5 h-5" />
+                  <span>Unggah foto</span>
+                </button>
+                <button className="text-sm font-semibold flex gap-2 items-center">
+                  <CameraIcon className="w-5 h-5" />
+                  <span>Ambil foto</span>
+                </button>
+              </div>
             </div>
           )}
 
           {currentImage?.url && (
-            <div className="w-full min-h-[350px] flex border justify-center items-center relative">
+            <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
               <Image
                 fill
                 src={currentImage.url}
@@ -163,108 +188,33 @@ export default function Index() {
           />
         </div>
 
-
-        <Button className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg">Cari</Button>
-        <ProgressBar/>
-
-        {/* <RecipeReader /> */}
-
-        {/* {dataRecipe && !loading && (
-          <FloatingButton onClick={handleSaveRecipe} />
+        {showButtonSearch && (
+          <Button
+            className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg"
+            onClick={handleSearchMasak}
+          >
+            Cari
+          </Button>
         )}
-            {currentImage?.url && (
-              <div className="w-72 h-72 flex border justify-center items-center relative">
-                <p>Tes</p>
-                <Image
-                  fill
-                  src={currentImage.url}
-                  alt={currentImage.file.name}
-                  className="w-full h-full"
-                />
-              </div>
-            )}
-          </div>
-
-          <button onClick={handleSearchMasak}>Cari</button>
-        </div>
 
         {loading && (
-          <>
-            <progress
-              className="w-full"
+          <div className="mt-4">
+            <ProgressBar
               value={loadingState.percent}
-              max={"100"}
+              indicatorText={loadingState.state}
+              max={100}
             />
-            <p className="text-center mt-5 text-lg">{loadingState.state}...</p>
-          </>
+          </div>
         )}
-        {dataRecipe && !loading && (
-          <>
-            <div className="mt-10 pt-2 flex flex-col items-center gap-5">
-              <h1>{dataRecipe.nama_makanan}</h1>
-              <p>{dataRecipe.deskripsi}</p>
-            </div>
-            <div className="flex flex-col gap-5">
-              <h3>Resep</h3>
-              <div>
-                <h5>Bahan-Bahan</h5>
-                <ul className="list-disc list-inside">
-                  {dataRecipe.bahan_baku.map((el) => (
-                    <li key={el}>{el}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h5>Langkah Pembuatan</h5>
-                <ul className="list-inside list-decimal">
-                  {dataRecipe.langkah_pembuatan.map((el) => (
-                    <li key={el}>{el}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="mt-5">
-              <h5>Rekomendasi Makanan Pendamping</h5>
-              <ul className="list-inside list-disc">
-                {dataRecipe.makanan_pendamping.map((el) => (
-                  <li key={el}>{el}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-5">
-              <h5>Rekomendasi Minuman Pendamping</h5>
-              <ul className="list-inside list-disc">
-                {dataRecipe.minuman_pendamping.map((el) => (
-                  <li key={el}>{el}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-5">
-              <h1>Rekomendasi Makanan Sejenis</h1>
-              <ul className="list-inside list-disc">
-                {dataRecipe.makanan_mirip.map((el) => (
-                  <li key={el}>{el}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-5">
-              <h1>Rekomendasi Resep dari Cookpad</h1>
-              <ul className="list-inside list-disc">
-                {listCookpadRecipe.map((el) => (
-                  <li key={`${el.title}${el.url}`}>
-                    <Link href={`/cari${el.url}`}>{el.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
 
-            <div className="mt-5 flex gap-5">
-              <button>Share</button>
-              <button>Simpan</button>
-            </div>
-          </>
-        )} */}
+        {!loading && dataRecipe && currentImage && (
+          <RecipeReader
+            dataRecipe={dataRecipe}
+            image={currentImage.file}
+            listCookpadRecipe={listCookpadRecipe}
+          />
+        )}
       </div>
     </Layout>
-  )
+  );
 }
