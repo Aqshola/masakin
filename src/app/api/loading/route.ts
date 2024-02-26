@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
   const responseStream = new TransformStream();
   const writer = responseStream.writable.getWriter();
   const encoder = new TextEncoder();
-  let abort = false;
   let interValCurrent: any;
 
   const syncStatusStream = async (notifier: SyncEvents) => {
