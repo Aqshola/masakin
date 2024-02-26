@@ -1,11 +1,24 @@
 import Image from "next/image";
 import { BookmarkIcon} from "@heroicons/react/24/outline";
-export default function RecipeReader(){
+import { GenerativeResponse } from "@/type/recipe";
+import { insertInDB } from "@/utils/indexDb";
+type Props={
+  dataRecipe:GenerativeResponse
+  image:File
+}
+export default function RecipeReader(props:Props){
+  async function handleSaveRecipe() {
+    await insertInDB(
+      { ...props.dataRecipe, source: "generative", img: props.image },
+      `generative-${props.dataRecipe?.nama_makanan.replace(" ", "-")}`
+    );
+  }
+
     return (
         <div className="mt-5 flex flex-col gap-5">
           <div className="bg-primary-orange p-2 bg-opacity-65 rounded flex justify-between text-primary-softblack items-start">
             <h2 className="text-3xl font-semibold  flex-wrap">Soto Ayam</h2>
-            <button>
+            <button onClick={handleSaveRecipe}>
               <BookmarkIcon className="w-7 h-7 mt-1"/>
             </button>
           </div>

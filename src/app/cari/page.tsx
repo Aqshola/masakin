@@ -266,5 +266,5 @@ export default function Index() {
         )} */}
       </div>
     </Layout>
-  );
+  )
 }
