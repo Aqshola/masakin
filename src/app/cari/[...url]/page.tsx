@@ -1,5 +1,5 @@
 "use client";
-import FloatingButton from "@/components/button/FloatingButton";
+import FloatingButton from "@/components/base/button/FloatingButton";
 import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
 import { insertInDB } from "@/utils/indexDb";
 import { fetcher } from "@/utils/network";

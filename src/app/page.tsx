@@ -1,6 +1,7 @@
 "use client";
 
-import PhoneFrame from "@/components/phone frame/PhoneFrame";
+import Button from "@/components/base/button/Button";
+import PhoneFrame from "@/components/unique/phone frame/PhoneFrame";
 import { initDb } from "@/utils/indexDb";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -22,9 +23,7 @@ export default function Home() {
           makan
         </p>
         <Link href={"/cari"}>
-          <button className="bg-primary-orange px-4 py-1 text-sm rounded font-medium text-primary-white">
-            Cari Resep
-          </button>
+          <Button>Cari Resep</Button>
         </Link>
         <div className="mt-10 px-2">
           <PhoneFrame />

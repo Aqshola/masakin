@@ -1,15 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
 import { CookpadListRecipe } from "@/utils/cookpad";
-import Link from "next/link";
-import FloatingButton from "@/components/button/FloatingButton";
 import { insertInDB } from "@/utils/indexDb";
-import Layout from "@/components/layout/Layout";
+import Layout from "@/components/wrapper/layout/Layout";
+import {
+  BookmarkIcon,
+  CameraIcon,
+  FolderIcon,
+} from "@heroicons/react/24/outline";
+import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
+import Image from "next/image";
+import Button from "@/components/base/button/Button";
+import ProgressBar from "@/components/base/loader/Progress";
 
 type currentImage = {
   file: File;
@@ -105,214 +111,67 @@ export default function Index() {
 
   return (
     <Layout>
-      <div className="h-full p-10 pb-20 relative bg-primary-softwhite">
+      <div className="h-full p-10 pb-20 relative">
         <h1 className="text-xl font-semibold text-primary-softblack ">
           Cari Resep
         </h1>
 
         {/* IMAGE */}
-        <div className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white">
+        <div className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden">
           {!currentImage && (
             <div className="flex flex-col gap-5">
               <button
                 className="text-sm font-semibold flex gap-2 items-center"
                 onClick={handleOpenUploadPicture}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
-                  />
-                </svg>
+                <FolderIcon className="w-5 h-5" />
                 <span>Unggah foto</span>
               </button>
               <button className="text-sm font-semibold flex gap-2 items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                  />
-                </svg>
+                <CameraIcon className="w-5 h-5" />
                 <span>Ambil foto</span>
               </button>
             </div>
           )}
-        </div>
 
-        {/* <button className="mt-5 py-2 px-5 bg-primary-orange font-semibold rounded-lg w-full text-white">
-          Cari
-        </button> */}
-
-        <div className="mt-5 flex flex-col gap-5">
-          <div className="bg-primary-orange p-2 bg-opacity-65 rounded flex justify-between text-primary-softblack items-start">
-            <h2 className="text-3xl font-semibold  flex-wrap">Soto Ayam</h2>
-            <button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-7 h-7"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* DESC */}
-          <div className="bg-white p-2 rounded">
-            <p className="text-sm leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Numquam
-              quo magnam commodi. Necessitatibus aperiam explicabo optio
-              excepturi distinctio accusamus beatae?
-            </p>
-          </div>
-
-          <div className="bg-white p-2 rounded">
-            <h3 className="text-lg font-bold mb-2">Resep</h3>
-            <ul>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-white p-2 rounded">
-            <h3 className="text-lg font-bold mb-2">Cara Pembuatan</h3>
-            <ul>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-              <li className="text-sm px-5 py-2 border border-primary-softblack rounded border-opacity-10 mb-2">
-                Bawang putih 100gr
-              </li>
-            </ul>
-          </div>
-
-          <div className="w-full bg-white p-2 rounded">
-            <h3 className="text-lg font-bold mb-2">Resep Cookpad</h3>
-            <div className="flex overflow-x-scroll gap-3 py-3">
-              <div>
-                <div className="bg-primary-green flex  bg-opacity-70 flex-col gap-2 w-[200px] h-[250px] overflow-hidden rounded-2xl">
-                  <div className="p-2 w-full h-[150px] relative">
-                    <Image
-                      src={"/img/placeholder_nasigoreng.jpg"}
-                      alt=""
-                      fill
-                      objectFit="cover"
-                    />
-                  </div>
-                  <div className="w-full p-2">
-                    <h4 className="font-semibold">Nasi goreng ibu rohmah</h4>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="bg-primary-green flex  bg-opacity-70 flex-col gap-2 w-[200px] h-[250px] overflow-hidden rounded-2xl">
-                  <div className="p-2 w-full h-[150px] relative">
-                    <Image
-                      src={"/img/placeholder_nasigoreng.jpg"}
-                      alt=""
-                      fill
-                      objectFit="cover"
-                    />
-                  </div>
-                  <div className="w-full p-2">
-                    <h4 className="font-semibold">Nasi goreng ibu rohmah</h4>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="bg-primary-green flex  bg-opacity-70 flex-col gap-2 w-[200px] h-[250px] overflow-hidden rounded-2xl">
-                  <div className="p-2 w-full h-[150px] relative">
-                    <Image
-                      src={"/img/placeholder_nasigoreng.jpg"}
-                      alt=""
-                      fill
-                      objectFit="cover"
-                    />
-                  </div>
-                  <div className="w-full p-2">
-                    <h4 className="font-semibold">Nasi goreng ibu rohmah</h4>
-                  </div>
-                </div>
-              </div>
+          {currentImage?.url && (
+            <div className="w-full min-h-[350px] flex border justify-center items-center relative">
+              <Image
+                fill
+                src={currentImage.url}
+                alt={currentImage.file.name}
+                className="w-full h-full"
+                objectFit="cover"
+              />
             </div>
-          </div>
+          )}
+
+          <input
+            onChange={handleUploadPicture}
+            ref={refInputCamera}
+            type="file"
+            name="image"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+          />
+          <input
+            onChange={handleUploadPicture}
+            type="file"
+            className="hidden"
+            ref={refInputPictureHidden}
+          />
         </div>
+
+
+        <Button className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg">Cari</Button>
+        <ProgressBar/>
+
+        {/* <RecipeReader /> */}
 
         {/* {dataRecipe && !loading && (
           <FloatingButton onClick={handleSaveRecipe} />
         )}
-        <div className="flex flex-col items-center gap-5 ">
-          <h1 className="text-center">Cari Resep</h1>
-          <div className="flex flex-col items-center gap-5">
-            <div className="flex gap-5">
-              <button className="border p-2" onClick={handleOpenCamera}>
-                Buka Kamera
-              </button>
-              <button className="border p-2" onClick={handleOpenUploadPicture}>
-                Upload
-              </button>
-            </div>
-
-            <input
-              onChange={handleUploadPicture}
-              ref={refInputCamera}
-              type="file"
-              name="image"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-            />
-            <input
-              onChange={handleUploadPicture}
-              type="file"
-              className="hidden"
-              ref={refInputPictureHidden}
-            />
-
             {currentImage?.url && (
               <div className="w-72 h-72 flex border justify-center items-center relative">
                 <p>Tes</p>
