@@ -16,6 +16,7 @@ import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";
+import { saveRecipe } from "@/utils/helper";
 
 type currentImage = {
   file: File;
@@ -118,103 +119,91 @@ export default function Index() {
     }
   }
 
-  async function handleSaveRecipe() {
-    await insertInDB(
-      { ...dataRecipe, source: "generative", img: currentImage?.file },
-      `generative-${dataRecipe?.nama_makanan.replace(" ", "-")}`
-    );
-  }
-
   return (
-    <Layout>
-      <div className="h-full p-10 pb-20 relative">
-        <h1 className="text-xl font-semibold text-primary-softblack ">
-          Cari Resep
-        </h1>
-
-        {/* IMAGE */}
-        <div
-          className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
-          onClick={handleToggleShowFormImage}
-        >
-          {showFormImage && (
-            <div
-              className={
-                "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
-              }
-            >
-              <div className="flex flex-col gap-5">
-                <button
-                  className="text-sm font-semibold flex gap-2 items-center"
-                  onClick={handleOpenUploadPicture}
-                >
-                  <FolderIcon className="w-5 h-5" />
-                  <span>Unggah foto</span>
-                </button>
-                <button className="text-sm font-semibold flex gap-2 items-center">
-                  <CameraIcon className="w-5 h-5" />
-                  <span>Ambil foto</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {currentImage?.url && (
-            <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
-              <Image
-                fill
-                src={currentImage.url}
-                alt={currentImage.file.name}
-                className="w-full h-full"
-                objectFit="cover"
-              />
-            </div>
-          )}
-
-          <input
-            onChange={handleUploadPicture}
-            ref={refInputCamera}
-            type="file"
-            name="image"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-          />
-          <input
-            onChange={handleUploadPicture}
-            type="file"
-            className="hidden"
-            ref={refInputPictureHidden}
-          />
-        </div>
-
-        {showButtonSearch && (
-          <Button
-            className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg"
-            onClick={handleSearchMasak}
+    <Layout title=" Cari Resep">
+      {/* IMAGE */}
+      <div
+        className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
+        onClick={handleToggleShowFormImage}
+      >
+        {showFormImage && (
+          <div
+            className={
+              "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
+            }
           >
-            Cari
-          </Button>
+            <div className="flex flex-col gap-5">
+              <button
+                className="text-sm font-semibold flex gap-2 items-center"
+                onClick={handleOpenUploadPicture}
+              >
+                <FolderIcon className="w-5 h-5" />
+                <span>Unggah foto</span>
+              </button>
+              <button className="text-sm font-semibold flex gap-2 items-center">
+                <CameraIcon className="w-5 h-5" />
+                <span>Ambil foto</span>
+              </button>
+            </div>
+          </div>
         )}
 
-        {loading && (
-          <div className="mt-4">
-            <ProgressBar
-              value={loadingState.percent}
-              indicatorText={loadingState.state}
-              max={100}
+        {currentImage?.url && (
+          <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
+            <Image
+              fill
+              src={currentImage.url}
+              alt={currentImage.file.name}
+              className="w-full h-full"
+              objectFit="cover"
             />
           </div>
         )}
 
-        {!loading && dataRecipe && currentImage && (
-          <RecipeReader
-            dataRecipe={dataRecipe}
-            image={currentImage.file}
-            listCookpadRecipe={listCookpadRecipe}
-          />
-        )}
+        <input
+          onChange={handleUploadPicture}
+          ref={refInputCamera}
+          type="file"
+          name="image"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+        />
+        <input
+          onChange={handleUploadPicture}
+          type="file"
+          className="hidden"
+          ref={refInputPictureHidden}
+        />
       </div>
+
+      {showButtonSearch && (
+        <Button
+          className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg"
+          onClick={handleSearchMasak}
+        >
+          Cari
+        </Button>
+      )}
+
+      {loading && (
+        <div className="mt-4">
+          <ProgressBar
+            value={loadingState.percent}
+            indicatorText={loadingState.state}
+            max={100}
+          />
+        </div>
+      )}
+
+      {!loading && dataRecipe && currentImage && (
+        <RecipeReader
+          dataRecipe={dataRecipe}
+          image={currentImage.file}
+          listCookpadRecipe={listCookpadRecipe}
+          type="generative"
+        />
+      )}
     </Layout>
   );
 }

@@ -1,24 +1,39 @@
-import Image from "next/image";
 import { BookmarkIcon } from "@heroicons/react/24/outline";
 import { GenerativeResponse } from "@/type/recipe";
-import { insertInDB } from "@/utils/indexDb";
 import RecipeListBox from "./RecipeListBox";
 import RecipeCookpadCardList from "./RecipeCookpadCardList";
 import { CookpadListRecipe } from "@/utils/cookpad";
+import { saveRecipe } from "@/utils/helper";
 type Props = {
   dataRecipe: GenerativeResponse;
   listCookpadRecipe?: Array<CookpadListRecipe>;
   image: File | string;
+  type: "cookpad" | "generative";
+  url?: string; //only for cookpad
+  buttonBookmark?: boolean;
 };
 export default function RecipeReader({
   listCookpadRecipe = [],
+  buttonBookmark = true,
   ...props
 }: Props) {
   async function handleSaveRecipe() {
-    await insertInDB(
-      { ...props.dataRecipe, source: "generative", img: props.image },
-      `generative-${props.dataRecipe?.nama_makanan.replace(" ", "-")}`
-    );
+    let result: boolean;
+
+    if (props.type == "cookpad") {
+      result = await saveRecipe(
+        props.dataRecipe,
+        props.image,
+        props.type,
+        props.url
+      );
+    } else {
+      result = await saveRecipe(props.dataRecipe, props.image, props.type);
+    }
+
+    if (result) {
+      alert("Ok");
+    }
   }
 
   return (
@@ -27,9 +42,11 @@ export default function RecipeReader({
         <h2 className="text-3xl font-semibold  flex-wrap">
           {props.dataRecipe.nama_makanan}
         </h2>
-        <button onClick={handleSaveRecipe}>
-          <BookmarkIcon className="w-7 h-7 mt-1" />
-        </button>
+        {buttonBookmark && (
+          <button onClick={handleSaveRecipe}>
+            <BookmarkIcon className="w-7 h-7 mt-1" onClick={handleSaveRecipe} />
+          </button>
+        )}
       </div>
 
       {/* DESC */}

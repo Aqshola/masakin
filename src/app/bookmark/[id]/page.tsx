@@ -1,4 +1,6 @@
 "use client";
+import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
+import Layout from "@/components/wrapper/layout/Layout";
 import { getDataByKeyIDB } from "@/utils/indexDb";
 import { getImageUrl } from "@/utils/ui";
 import Image from "next/image";
@@ -26,44 +28,27 @@ export default function Index({ params }: Param) {
 
   if (!dataRecipe) return <div>Not found</div>;
   return (
-    <div className="min-h-screen max-w-screen-2xl mx-auto p-10 relative">
-      <h5 className="text-center mb-5">Bookmark</h5>
-      <h1 className="text-center">{dataRecipe.nama_makanan}</h1>
+    <Layout title="Bookmark Resep">
+      {dataRecipe && (
+        <>
+          <div className="w-full min-h-[350px] mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative">
+            <Image
+              fill
+              src={dataRecipe.img}
+              alt={dataRecipe.nama_makanan}
+              className="w-full h-full"
+              objectFit="cover"
+            />
+          </div>
 
-      <div className="flex w-full h-[400px] relative mx-auto mt-5">
-        <Image
-          src={
-            typeof dataRecipe.img === "string"
-              ? dataRecipe.img
-              : getImageUrl(dataRecipe.img)
-          }
-          fill
-          alt={dataRecipe.nama_makanan}
-          objectFit="cover"
-        />
-      </div>
-
-      {dataRecipe.source === "generative" && (
-        <div className="mt-10">{dataRecipe.deskripsi}</div>
+          <RecipeReader
+            dataRecipe={dataRecipe}
+            image={dataRecipe.img}
+            type="cookpad"
+            buttonBookmark={false}
+          />
+        </>
       )}
-
-      <div className="mt-10">
-        <h2>Bahan baku</h2>
-        <ul className="mt-4">
-          {dataRecipe.bahan_baku.map((el: string) => (
-            <li key={el}>{el}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mt-10">
-        <h2>Cara Pembuatan</h2>
-        <ul className="mt-4">
-          {dataRecipe.langkah_pembuatan.map((el: string) => (
-            <li key={el}>{el}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </Layout>
   );
 }
