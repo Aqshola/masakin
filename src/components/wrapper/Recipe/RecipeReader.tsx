@@ -7,10 +7,13 @@ import RecipeCookpadCardList from "./RecipeCookpadCardList";
 import { CookpadListRecipe } from "@/utils/cookpad";
 type Props = {
   dataRecipe: GenerativeResponse;
-  listCookpadRecipe: Array<CookpadListRecipe>;
-  image: File;
+  listCookpadRecipe?: Array<CookpadListRecipe>;
+  image: File | string;
 };
-export default function RecipeReader(props: Props) {
+export default function RecipeReader({
+  listCookpadRecipe = [],
+  ...props
+}: Props) {
   async function handleSaveRecipe() {
     await insertInDB(
       { ...props.dataRecipe, source: "generative", img: props.image },
@@ -30,9 +33,13 @@ export default function RecipeReader(props: Props) {
       </div>
 
       {/* DESC */}
-      <div className="bg-white p-2 rounded">
-        <p className="text-sm leading-relaxed">{props.dataRecipe.deskripsi}</p>
-      </div>
+      {props.dataRecipe.deskripsi && (
+        <div className="bg-white p-2 rounded">
+          <p className="text-sm leading-relaxed">
+            {props.dataRecipe.deskripsi}
+          </p>
+        </div>
+      )}
 
       <div className="bg-white p-2 rounded">
         <h3 className="text-lg font-bold mb-2">Resep</h3>
@@ -44,10 +51,12 @@ export default function RecipeReader(props: Props) {
         <RecipeListBox listData={props.dataRecipe.langkah_pembuatan} />
       </div>
 
-      <div className="w-full bg-white p-2 rounded">
-        <h3 className="text-lg font-bold mb-2">Resep Cookpad</h3>
-        <RecipeCookpadCardList listData={props.listCookpadRecipe} />
-      </div>
+      {listCookpadRecipe.length > 0 && (
+        <div className="w-full bg-white p-2 rounded">
+          <h3 className="text-lg font-bold mb-2">Resep Cookpad</h3>
+          <RecipeCookpadCardList listData={listCookpadRecipe} />
+        </div>
+      )}
     </div>
   );
 }

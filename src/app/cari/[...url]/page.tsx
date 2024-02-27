@@ -1,5 +1,6 @@
 "use client";
 import FloatingButton from "@/components/base/button/FloatingButton";
+import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
 import { insertInDB } from "@/utils/indexDb";
 import { fetcher } from "@/utils/network";
@@ -30,31 +31,24 @@ export default function Index({ params }: Param) {
   if (isLoading) return <div>loading...</div>;
   if (!data) return "no Data";
   return (
-    <div className="min-h-screen max-w-screen-2xl mx-auto p-10 relative">
-      <FloatingButton onClick={handleSaveRecipe} />
-      <h1 className="text-center">{data?.nama_makanan}</h1>
+    <div className="h-full p-10 pb-20 relative">
+      <h1 className="text-xl font-semibold text-primary-softblack ">
+        Resep Cookpad
+      </h1>
 
-      <div className="flex w-full h-[400px] relative mx-auto mt-5">
-        <Image src={data.img} fill alt={data?.nama_makanan} objectFit="cover" />
+      <div className="w-full min-h-[350px] mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative">
+        <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
+          <Image
+            fill
+            src={data.img}
+            alt={data?.nama_makanan}
+            className="w-full h-full"
+            objectFit="cover"
+          />
+        </div>
       </div>
 
-      <div className="mt-10">
-        <h2>Bahan baku</h2>
-        <ul className="mt-4">
-          {data.bahan_baku.map((el: string) => (
-            <li key={el}>{el}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mt-10">
-        <h2>Cara Pembuatan</h2>
-        <ul className="mt-4">
-          {data.langkah_pembuatan.map((el: string) => (
-            <li key={el}>{el}</li>
-          ))}
-        </ul>
-      </div>
+      <RecipeReader dataRecipe={data} image={data.img} listCookpadRecipe={[]} />
     </div>
   );
 }
