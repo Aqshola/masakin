@@ -8,9 +8,9 @@ Stack Using
 
 ## TODO
 
-- Cek Bookmarked
+- Cek Bookmarked ✅
 - Presistent State
 - Animation
 - Handling Error
 - PWA
-- Handle delete bookmark
+- Handle delete bookmark ✅
