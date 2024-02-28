@@ -39,16 +39,13 @@ export async function getDataByKeyIDB(key: string) {
 
 export async function insertInDB(value: any, key: any) {
   const dbLocal = await openIDB();
-
-  const checkIfExist = await getDataByKeyIDB(key);
-
-  if (checkIfExist) {
-    alert("DUPLICATE DATA");
-    return;
-  }
-
   dbLocal.add(IDB_STORE_NAME, { ...value, key }, key);
   dbLocal.close();
+}
+
+export async function deleteInDB(key:any){
+  const dbLocal=await openIDB()
+  dbLocal.delete(IDB_STORE_NAME,key)
 }
 
 export async function getAllDataIDB() {
@@ -57,3 +54,5 @@ export async function getAllDataIDB() {
 
   return allData;
 }
+
+

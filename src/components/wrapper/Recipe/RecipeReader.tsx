@@ -1,9 +1,12 @@
-import { BookmarkIcon } from "@heroicons/react/24/outline";
+import { BookmarkIcon as BookmarkIconOutline } from "@heroicons/react/24/outline";
+import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
 import { GenerativeResponse } from "@/type/recipe";
 import RecipeListBox from "./RecipeListBox";
 import RecipeCookpadCardList from "./RecipeCookpadCardList";
 import { CookpadListRecipe } from "@/utils/cookpad";
-import { saveRecipe } from "@/utils/helper";
+import { generateKeyRecipe, saveRecipe } from "@/utils/helper";
+import { deleteInDB, getDataByKeyIDB } from "@/utils/indexDb";
+import { useEffect, useState } from "react";
 type Props = {
   dataRecipe: GenerativeResponse;
   listCookpadRecipe?: Array<CookpadListRecipe>;
@@ -17,22 +20,45 @@ export default function RecipeReader({
   buttonBookmark = true,
   ...props
 }: Props) {
-  async function handleSaveRecipe() {
-    let result: boolean;
+  const [isSaved, setIsSaved] = useState(false);
 
-    if (props.type == "cookpad") {
-      result = await saveRecipe(
+  useEffect(() => {
+    void checkRecipeSaved();
+  }, []);
+
+  async function handleSaveRecipe() {
+    if(isSaved){
+      const key = generateKeyRecipe(
+        props.type,
+        props.url,
+        props.dataRecipe.nama_makanan
+      );
+      deleteInDB(key)
+      setIsSaved(false)
+    }else{
+      const result = await saveRecipe(
         props.dataRecipe,
         props.image,
         props.type,
         props.url
       );
-    } else {
-      result = await saveRecipe(props.dataRecipe, props.image, props.type);
+  
+      if (result) {
+        alert("Ok");
+      }
+      setIsSaved(true)
     }
+  }
 
-    if (result) {
-      alert("Ok");
+  async function checkRecipeSaved() {
+    const key = generateKeyRecipe(
+      props.type,
+      props.url,
+      props.dataRecipe.nama_makanan
+    );
+    const data = await getDataByKeyIDB(key);
+    if (data) {
+      setIsSaved(true);
     }
   }
 
@@ -44,7 +70,11 @@ export default function RecipeReader({
         </h2>
         {buttonBookmark && (
           <button onClick={handleSaveRecipe}>
-            <BookmarkIcon className="w-7 h-7 mt-1" onClick={handleSaveRecipe} />
+            {isSaved ? (
+              <BookmarkIconSolid className="w-7 h-7 mt-1" />
+            ) : (
+              <BookmarkIconOutline className="w-7 h-7 mt-1" />
+            )}
           </button>
         )}
       </div>

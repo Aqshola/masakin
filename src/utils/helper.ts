@@ -9,14 +9,8 @@ export async function saveRecipe(
   url?: string //only for cookpad
 ) {
   try {
-    let key = "";
-    if (url) {
-      key = url.replaceAll("/", "-");
-    }
-
-    if (type == "generative") {
-      key = `generative-${dataRecipe?.nama_makanan.replace(" ", "-")}`;
-    }
+    let key = generateKeyRecipe(type,url,dataRecipe.nama_makanan);
+    
 
     await insertInDB({ ...dataRecipe, img, source: type }, key);
     return true;
@@ -36,4 +30,17 @@ export async function getLocalRecipe(key: string) {
     ...dataIDB,
     img,
   };
+}
+
+
+export function generateKeyRecipe(type:'cookpad'|'generative',url?:string, foodName?:string){
+    if (type=='cookpad' && url) {
+      return url.replaceAll("/", "-");
+    }
+
+    if (type == "generative" && foodName) {
+      return `generative-${foodName.replace(" ", "-")}`;
+    }
+    return ''
+
 }
