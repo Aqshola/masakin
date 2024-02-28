@@ -9,7 +9,7 @@ Stack Using
 ## TODO
 
 - Cek Bookmarked ✅
-- Presistent State
+- Presistent State ✅
 - Animation
 - Handling Error
 - PWA

@@ -36,8 +36,8 @@ export default function Index({ params }: Param) {
               fill
               src={dataRecipe.img}
               alt={dataRecipe.nama_makanan}
-              className="w-full h-full"
-              objectFit="cover"
+              className="w-full h-full object-cover"
+              
             />
           </div>
 
