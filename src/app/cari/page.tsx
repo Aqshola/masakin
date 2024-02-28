@@ -16,10 +16,11 @@ import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";
-import { saveRecipe } from "@/utils/helper";
+import { base64ToFile, imageToBase64, saveRecipe } from "@/utils/helper";
+import { getStorageState, setStorageState } from "@/utils/presistent";
 
 type currentImage = {
-  file: File;
+  file: string;
   url: string;
 };
 
@@ -41,7 +42,7 @@ export default function Index() {
     percent: 0,
     state: "",
   });
-  const [showFormImage, setShowFormImage] = useState<boolean>(true);
+  const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
 
   useEffect(() => {
@@ -74,11 +75,42 @@ export default function Index() {
     };
   }, [loading]);
 
-  function setterCurrentImage(files: FileList) {
+  //PRESISTENT STATE
+  useEffect(()=>{
+    let timeout=setTimeout(() => {
+      if(dataRecipe){
+        const savedPresistent={
+          currentImage,
+          dataRecipe,
+          showButtonSearch,
+          listCookpadRecipe
+        }
+        setStorageState(savedPresistent)
+      }
+    }, 500);
+    return ()=>{
+      clearTimeout(timeout)
+    }
+  },[currentImage,dataRecipe,listCookpadRecipe])
+
+  //SET PRESISTENT
+  useEffect(() => {
+    const data = getStorageState();
+    if (data) {
+      setCurrentImage(data.currentImage);
+      setDataRecipe(data.dataRecipe);
+      setShowButtonSearch(data.showButtonSearch);
+      setListCookpadRecipe(data.listCookpadRecipe)
+    }
+  }, []);
+
+  async function setterCurrentImage(files: FileList) {
     const imageFile = files[0];
+    const base64File = (await imageToBase64(imageFile)) as string;
+
     const urlImage = getImageUrl(imageFile);
     setCurrentImage({
-      file: imageFile,
+      file: base64File,
       url: urlImage,
     });
   }
@@ -107,26 +139,27 @@ export default function Index() {
   }
 
   async function handleSearchMasak() {
-    if (currentImage) {
-      setShowButtonSearch(false);
-      setLoading(true);
-      setLoadingState({ percent: 0, state: "Starting" });
-      const data = new FormData();
-      data.set("image", currentImage.file);
-      const res = await axios.post("/api/generative", data);
-      setDataRecipe(res.data.generativeResponse);
-      setListCookpadRecipe(res.data.listCookpadRecipe);
-    }
+    if (!currentImage) return;
+    const fileImage = base64ToFile(currentImage?.file);
+    if (!fileImage) return;
+    setShowButtonSearch(false);
+    setLoading(true);
+    setLoadingState({ percent: 0, state: "Starting" });
+    const data = new FormData();
+    data.set("image", fileImage);
+    const res = await axios.post("/api/generative", data);
+    setDataRecipe(res.data.generativeResponse);
+    setListCookpadRecipe(res.data.listCookpadRecipe);
   }
 
   return (
-    <Layout title=" Cari Resep">
+    <Layout title="Cari Resep">
       {/* IMAGE */}
       <div
         className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
         onClick={handleToggleShowFormImage}
       >
-        {showFormImage && (
+        {(showFormImage || !currentImage) && (
           <div
             className={
               "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
@@ -140,7 +173,10 @@ export default function Index() {
                 <FolderIcon className="w-5 h-5" />
                 <span>Unggah foto</span>
               </button>
-              <button className="text-sm font-semibold flex gap-2 items-center">
+              <button
+                className="text-sm font-semibold flex gap-2 items-center"
+                onClick={handleOpenCamera}
+              >
                 <CameraIcon className="w-5 h-5" />
                 <span>Ambil foto</span>
               </button>
@@ -148,14 +184,13 @@ export default function Index() {
           </div>
         )}
 
-        {currentImage?.url && (
+        {currentImage?.file && (
           <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
             <Image
               fill
-              src={currentImage.url}
-              alt={currentImage.file.name}
-              className="w-full h-full"
-              objectFit="cover"
+              src={currentImage.file}
+              alt={"food photo"}
+              className="w-full h-full object-cover"
             />
           </div>
         )}

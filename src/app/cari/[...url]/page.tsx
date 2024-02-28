@@ -30,7 +30,6 @@ export default function Index({ params }: Param) {
 
   return (
     <Layout title="Resep Cookpad">
-      ]
       {isLoading && (
         <div className="mt-28 w-full text-center">
           <p className="text-lg font-semibold">Loading...</p>
