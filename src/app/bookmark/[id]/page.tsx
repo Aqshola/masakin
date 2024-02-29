@@ -27,7 +27,7 @@ export default function Index({ params }: Param) {
 
   if (!dataRecipe) return <div>Not found</div>;
   return (
-    <Layout>
+    <div className="h-full p-10 pb-20 relative">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Bookmark Resep
       </h1>
@@ -50,6 +50,6 @@ export default function Index({ params }: Param) {
           />
         </>
       )}
-    </Layout>
+    </div>
   );
 }

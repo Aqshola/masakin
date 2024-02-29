@@ -1,19 +1,22 @@
 import BottomNav from "@/components/base/nav/BottomNav";
+import { usePathname } from "next/navigation";
 
 type Props = {
   children: React.ReactNode;
   title?: string;
-  showNav?: boolean;
 };
-export default function Layout({ title, showNav = true, ...props }: Props) {
+export default function Layout({ title, ...props }: Props) {
+  const pathname = usePathname();
+  const showNav = pathname == "/";
+
   return (
     <div className="relative w-full min-h-screen bg-primary-softwhite">
-      <div className="h-full p-10 pb-20 relative">
-        
+      <div id="transition-element" className="overflow-x-hidden">
 
-        {props.children}
+      {props.children}
       </div>
-      {showNav && <BottomNav />}
+
+      {!showNav && <BottomNav />}
     </div>
   );
 }

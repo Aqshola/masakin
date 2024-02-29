@@ -10,7 +10,7 @@ Stack Using
 
 - Cek Bookmarked ✅
 - Presistent State ✅
-- Animation
+- Animation ✅
 - Handling Error
-- PWA
+- PWA 
 - Handle delete bookmark ✅

@@ -165,7 +165,7 @@ export default function Index() {
   }
 
   return (
-    <Layout>
+    <div className="h-full p-10 pb-20 relative">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Cari Resep
       </h1>
@@ -261,6 +261,6 @@ export default function Index() {
           type="generative"
         />
       )}
-    </Layout>
+    </div>
   );
 }

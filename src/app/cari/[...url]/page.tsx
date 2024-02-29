@@ -16,20 +16,13 @@ type Param = {
 export default function Index({ params }: Param) {
   const parsedURL = params.url.join("/");
 
-  const { data, error, isLoading } = useSWR<CookpadRecipeResponse>(
+  const { data, isLoading } = useSWR<CookpadRecipeResponse>(
     `/api/cookpad/${parsedURL}`,
     fetcher
   );
 
-  async function handleSaveRecipe() {
-    await insertInDB(
-      { ...data, source: "cookpad" },
-      `cookpad-${parsedURL.replaceAll("/", "-")}`
-    );
-  }
-
   return (
-    <Layout>
+    <div className="h-full p-10 pb-20 relative">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Resep Cookpad
       </h1>
@@ -58,6 +51,6 @@ export default function Index({ params }: Param) {
           />
         </>
       )}
-    </Layout>
+    </div>
   );
 }

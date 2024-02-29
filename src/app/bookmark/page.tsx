@@ -17,7 +17,7 @@ export default function Index() {
   }
 
   return (
-    <Layout>
+    <div className="h-full p-10 pb-20 relative">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Buku Resep
       </h1>
@@ -33,6 +33,6 @@ export default function Index() {
           </Link>
         ))}
       </div>
-    </Layout>
+    </div>
   );
 }
