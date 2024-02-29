@@ -17,7 +17,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-full flex fixed bottom-0 justify-between bottomnav-shadow">
+    <nav className="w-full flex fixed bottom-0 justify-between bottomnav-shadow max-w-2xl mx-auto">
       <div className="bg-white py-2 w-full flex items-center justify-start rounded-tl-xl px-10">
         <TransitionLink href={"/cari"}>
           

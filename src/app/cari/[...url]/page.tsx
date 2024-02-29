@@ -1,9 +1,6 @@
 "use client";
-import FloatingButton from "@/components/base/button/FloatingButton";
 import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
-import Layout from "@/components/wrapper/layout/Layout";
 import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
-import { insertInDB } from "@/utils/indexDb";
 import { fetcher } from "@/utils/network";
 import Image from "next/image";
 import useSWR from "swr";
@@ -13,16 +10,16 @@ type Param = {
     url: string[];
   };
 };
-export default function Index({ params }: Param) {
+export default function Index({ params,...rest }: Param) {
+  console.log(rest)
   const parsedURL = params.url.join("/");
-
   const { data, isLoading } = useSWR<CookpadRecipeResponse>(
     `/api/cookpad/${parsedURL}`,
     fetcher
   );
 
   return (
-    <div className="h-full p-10 pb-20 relative">
+    <div className="h-full p-10 pb-20 relative min-h-screen w-full">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Resep Cookpad
       </h1>

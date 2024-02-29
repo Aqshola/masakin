@@ -11,9 +11,8 @@ export default function Layout({ title, ...props }: Props) {
 
   return (
     <div className="relative w-full min-h-screen bg-primary-softwhite">
-      <div id="transition-element" className="overflow-x-hidden">
-
-      {props.children}
+      <div id="transition-element" className="overflow-x-hidden opacity-0">
+        {props.children}
       </div>
 
       {!showNav && <BottomNav />}

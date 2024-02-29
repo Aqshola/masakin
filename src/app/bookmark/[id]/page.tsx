@@ -25,9 +25,9 @@ export default function Index({ params }: Param) {
     void getDataRecipe();
   }, []);
 
-  if (!dataRecipe) return <div>Not found</div>;
+  // if (!dataRecipe) return <div>Not found</div>;
   return (
-    <div className="h-full p-10 pb-20 relative">
+    <div className="h-full p-10 pb-20 relative min-h-screen w-full">
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Bookmark Resep
       </h1>

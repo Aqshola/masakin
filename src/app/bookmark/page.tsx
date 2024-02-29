@@ -1,7 +1,6 @@
 "use client";
-import Layout from "@/components/wrapper/layout/Layout";
+import TransitionLink from "@/components/base/Link/TransitionLink";
 import { getAllDataIDB } from "@/utils/indexDb";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -28,9 +27,9 @@ export default function Index() {
           </div>
         )}
         {dataBookmark.length>0 && dataBookmark.map((el, idx) => (
-          <Link href={`/bookmark/${el.key}`} key={el.key}>
+          <TransitionLink href={`/bookmark/${el.key}`} key={el.key}>
             <div className="border p-2 rounded">{el.nama_makanan}</div>
-          </Link>
+          </TransitionLink>
         ))}
       </div>
     </div>
