@@ -44,6 +44,7 @@ export default function Index() {
   });
   const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
 
   useEffect(() => {
     let eventSource: EventSource;
@@ -76,22 +77,22 @@ export default function Index() {
   }, [loading]);
 
   //PRESISTENT STATE
-  useEffect(()=>{
-    let timeout=setTimeout(() => {
-      if(dataRecipe){
-        const savedPresistent={
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      if (dataRecipe) {
+        const savedPresistent = {
           currentImage,
           dataRecipe,
           showButtonSearch,
-          listCookpadRecipe
-        }
-        setStorageState(savedPresistent)
+          listCookpadRecipe,
+        };
+        setStorageState(savedPresistent);
       }
     }, 500);
-    return ()=>{
-      clearTimeout(timeout)
-    }
-  },[currentImage,dataRecipe,listCookpadRecipe])
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [currentImage, dataRecipe, listCookpadRecipe]);
 
   //SET PRESISTENT
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function Index() {
       setCurrentImage(data.currentImage);
       setDataRecipe(data.dataRecipe);
       setShowButtonSearch(data.showButtonSearch);
-      setListCookpadRecipe(data.listCookpadRecipe)
+      setListCookpadRecipe(data.listCookpadRecipe);
     }
   }, []);
 
@@ -131,6 +132,8 @@ export default function Index() {
     setterCurrentImage(uploadedFile);
     setShowFormImage(false);
     setShowButtonSearch(true);
+    setDataRecipe(undefined);
+    setListCookpadRecipe([]);
   }
 
   function handleToggleShowFormImage() {
@@ -142,18 +145,31 @@ export default function Index() {
     if (!currentImage) return;
     const fileImage = base64ToFile(currentImage?.file);
     if (!fileImage) return;
+    setIsError(false);
     setShowButtonSearch(false);
     setLoading(true);
     setLoadingState({ percent: 0, state: "Starting" });
-    const data = new FormData();
-    data.set("image", fileImage);
-    const res = await axios.post("/api/generative", data);
-    setDataRecipe(res.data.generativeResponse);
-    setListCookpadRecipe(res.data.listCookpadRecipe);
+
+    try {
+      const data = new FormData();
+      data.set("image", fileImage);
+      const res = await axios.post("/api/generative", data);
+      setDataRecipe(res.data.generativeResponse);
+      setListCookpadRecipe(res.data.listCookpadRecipe);
+    } catch (error) {
+      console.log("[ERROR]", error);
+      setShowButtonSearch(true);
+      setLoading(false);
+      setIsError(true);
+    }
   }
 
   return (
-    <Layout title="Cari Resep">
+    <Layout>
+      <h1 className="text-xl font-semibold text-primary-softblack ">
+        Cari Resep
+      </h1>
+
       {/* IMAGE */}
       <div
         className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
@@ -219,6 +235,12 @@ export default function Index() {
         >
           Cari
         </Button>
+      )}
+
+      {isError && (
+        <div className="text-xl text-primary-red font-bold text-center mt-10">
+          Yah gagal deteksi makanan nih 😔, Yuk Coba run lagi
+        </div>
       )}
 
       {loading && (

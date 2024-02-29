@@ -12,8 +12,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="w-full font-poppins h-screen overflow-hidden">
-      <div className="flex  items-center bg-white min-h-screen flex-col gap-5 py-32">
+    <main className="w-full h-screen overflow-hidden">
+      <div className="flex items-center bg-white min-h-screen flex-col gap-5 py-32">
         <h1 className="text-5xl font-extrabold text-primary-softblack ">
           Masakin
         </h1>

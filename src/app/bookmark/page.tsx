@@ -17,7 +17,10 @@ export default function Index() {
   }
 
   return (
-    <Layout title="Buku Resep">
+    <Layout>
+      <h1 className="text-xl font-semibold text-primary-softblack ">
+        Buku Resep
+      </h1>
       <div className="mt-10 flex flex-col gap-3 bg-white p-2 rounded">
         {dataBookmark.length==0 && (
           <div>

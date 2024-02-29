@@ -29,7 +29,10 @@ export default function Index({ params }: Param) {
   }
 
   return (
-    <Layout title="Resep Cookpad">
+    <Layout>
+      <h1 className="text-xl font-semibold text-primary-softblack ">
+        Resep Cookpad
+      </h1>
       {isLoading && (
         <div className="mt-28 w-full text-center">
           <p className="text-lg font-semibold">Loading...</p>
@@ -42,8 +45,8 @@ export default function Index({ params }: Param) {
               fill
               src={data.img}
               alt={data?.nama_makanan}
-              className="w-full h-full"
-              objectFit="cover"
+              className="w-full h-full object-cover"
+              
             />
           </div>
 
