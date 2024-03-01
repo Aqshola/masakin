@@ -16,7 +16,7 @@ import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";
-import { base64ToFile, imageToBase64, saveRecipe } from "@/utils/helper";
+import { base64ToFile, compressImage, imageToBase64, saveRecipe } from "@/utils/helper";
 import { getStorageState, setStorageState } from "@/utils/presistent";
 
 type currentImage = {
@@ -42,6 +42,8 @@ export default function Index() {
     percent: 0,
     state: "",
   });
+  const [loadImage, setLoadImage] = useState<boolean>(false);
+  
   const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
@@ -106,14 +108,17 @@ export default function Index() {
   }, []);
 
   async function setterCurrentImage(files: FileList) {
+    setLoadImage(true)
     const imageFile = files[0];
-    const base64File = (await imageToBase64(imageFile)) as string;
+    const compress=await compressImage(imageFile)
+    const base64File = (await imageToBase64(compress)) as string;
 
     const urlImage = getImageUrl(imageFile);
     setCurrentImage({
       file: base64File,
       url: urlImage,
     });
+    setLoadImage(false)
   }
   function handleOpenCamera() {
     if (!refInputCamera) return;
@@ -175,7 +180,13 @@ export default function Index() {
         className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
         onClick={handleToggleShowFormImage}
       >
-        {(showFormImage || !currentImage) && (
+        {loadImage && (
+
+        <div className="w-full flex justify-center items-center h-full">
+            <p className="font-medium">Loading Image ....</p>
+        </div>
+        )}
+        {!loadImage && (showFormImage || !currentImage) && (
           <div
             className={
               "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
@@ -200,7 +211,7 @@ export default function Index() {
           </div>
         )}
 
-        {currentImage?.file && (
+        {!loadImage&& currentImage?.file && (
           <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
             <Image
               fill

@@ -1,6 +1,8 @@
 import { GenerativeResponse } from "@/type/recipe";
 import { getDataByKeyIDB, insertInDB } from "./indexDb";
 import { getImageUrl } from "./ui";
+import sharp from "sharp";
+import imageCompression from "browser-image-compression";
 
 export async function saveRecipe(
   dataRecipe: GenerativeResponse,
@@ -72,3 +74,12 @@ export const base64ToFile = (base64: string) => {
 
   return null
 };
+
+export const compressImage= async (file:File)=>{
+  const compressedFile= await imageCompression(file, {
+    maxSizeMB:1,
+    useWebWorker:true
+  })
+
+  return compressedFile
+}

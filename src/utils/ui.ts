@@ -11,7 +11,6 @@ export function isOpenInMobile(userAgent: string) {
   return regexMobileOne.test(userAgent) || regexMobileTwo.test(userAgent);
 }
 
-
 export function eventWindowBeforeClose(callback:Function){
   if(!window) return
 

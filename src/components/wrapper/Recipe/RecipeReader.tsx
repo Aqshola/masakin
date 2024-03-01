@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 type Props = {
   dataRecipe: GenerativeResponse;
   listCookpadRecipe?: Array<CookpadListRecipe>;
-  image: File | string;
+  image: string;
   type: "cookpad" | "generative";
   url?: string; //only for cookpad
   buttonBookmark?: boolean;

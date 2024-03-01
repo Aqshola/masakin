@@ -80,7 +80,7 @@ export default function Index({ params,searchParams }: Param) {
             image={dataView.img}
             type={dataView.type || 'cookpad'}
             url={parsedURL}
-            buttonBookmark={!isBookmark}
+            // buttonBookmark={!isBookmark}
           />
         </>
       )}

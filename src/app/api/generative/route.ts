@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import {
   GoogleGenerativeAI,
@@ -8,6 +7,7 @@ import {
 import { getCookpadListRecipe } from "@/utils/cookpad";
 import { getIpRequest, setLoadingState } from "@/utils/network";
 import { redisClient } from "@/libs/redis";
+import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
   const ip = getIpRequest(request);
@@ -22,6 +22,10 @@ export async function POST(request: NextRequest) {
   const data = await request.formData();
   const imageData = data.get("image") as File;
   const byteImage = await imageData.arrayBuffer();
+  const buffer= Buffer.from(byteImage)
+
+  //SHARP
+  const compressed=await sharp(buffer).jpeg({quality:50}).toBuffer()
 
   const API_KEY = process.env.GEMINI_KEY || "";
   const MODEL_NAME = "gemini-pro-vision";
@@ -81,7 +85,7 @@ export async function POST(request: NextRequest) {
     {
       inlineData: {
         mimeType: "image/jpeg",
-        data: Buffer.from(byteImage).toString("base64"),
+        data: compressed.toString('base64')
       },
     },
     { text: "\n" },
