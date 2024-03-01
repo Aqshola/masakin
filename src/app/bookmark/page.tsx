@@ -27,7 +27,7 @@ export default function Index() {
           </div>
         )}
         {dataBookmark.length>0 && dataBookmark.map((el, idx) => (
-          <TransitionLink href={`/bookmark/${el.key}`} key={el.key}>
+          <TransitionLink href={`/detail/${el.key}?type=bookmark`} key={el.key}>
             <div className="border p-2 rounded">{el.nama_makanan}</div>
           </TransitionLink>
         ))}

@@ -1,59 +1,89 @@
 "use client";
 import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
+import { getDataByKeyIDB } from "@/utils/indexDb";
 import { fetcher } from "@/utils/network";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { isArray } from "util";
 
 type Param = {
   params: {
-    url: string[];
+    url: string[]
   },
   searchParams:{
     type:string
   }
 };
-export default function Index({ params,...rest }: Param) {
-  console.log(rest)
-  const parsedURL = params.url.join("/");
+export default function Index({ params,searchParams }: Param) {
+  const pureUrl=params.url
+  const parsedURL =  pureUrl.join("/")
+  const isBookmark=searchParams.type =='bookmark'
 
   const { data, isLoading } = useSWR<CookpadRecipeResponse>(
-    `/api/cookpad/${parsedURL}`,
+    isBookmark?null: `/api/cookpad/${parsedURL}`,
     fetcher
   );
 
-  return <div>Tes</div>
+  const [dataView, setdataView] = useState<any>(data)
 
-  // return (
-  //   <div className="h-full p-10 pb-20 relative min-h-screen w-full">
-  //     <h1 className="text-xl font-semibold text-primary-softblack ">
-  //       Resep Cookpad
-  //     </h1>
-  //     {isLoading && (
-  //       <div className="mt-28 w-full text-center">
-  //         <p className="text-lg font-semibold">Loading...</p>
-  //       </div>
-  //     )}
-  //     {!isLoading && data && (
-  //       <>
-  //         <div className="w-full min-h-[350px] mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative">
-  //           <Image
-  //             fill
-  //             src={data.img}
-  //             alt={data?.nama_makanan}
-  //             className="w-full h-full object-cover"
+  useEffect(() => {
+    void getDataRecipe();
+  }, []);
+
+
+  useEffect(()=>{
+    if(!isBookmark){
+      setdataView(data)
+    }
+
+  },[isLoading])
+
+  async function getDataRecipe() {
+    if(isBookmark &&  pureUrl.length>0){
+      const dataIDB = await getDataByKeyIDB(pureUrl[0]);
+      setdataView(dataIDB);
+    }
+  }
+
+  
+  
+  
+
+  
+
+  return (
+    <div className="h-full p-10 pb-20 relative min-h-screen w-full">
+      <h1 className="text-xl font-semibold text-primary-softblack ">
+        Resep Cookpad
+      </h1>
+      {isLoading && (
+        <div className="mt-28 w-full text-center">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
+      )}
+      {!isLoading && dataView && (
+        <>
+          <div className="w-full min-h-[350px] mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative">
+            <Image
+              fill
+              src={dataView.img}
+              alt={dataView?.nama_makanan}
+              className="w-full h-full object-cover"
               
-  //           />
-  //         </div>
+            />
+          </div>
 
-  //         <RecipeReader
-  //           dataRecipe={data}
-  //           image={data.img}
-  //           type="cookpad"
-  //           url={parsedURL}
-  //         />
-  //       </>
-  //     )}
-  //   </div>
-  // );
+          <RecipeReader
+            dataRecipe={dataView}
+            image={dataView.img}
+            type={dataView.type || 'cookpad'}
+            url={parsedURL}
+            buttonBookmark={!isBookmark}
+          />
+        </>
+      )}
+    </div>
+  );
 }

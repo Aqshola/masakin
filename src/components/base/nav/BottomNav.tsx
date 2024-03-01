@@ -17,7 +17,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-full flex fixed bottom-0 justify-between bottomnav-shadow max-w-2xl mx-auto">
+    <nav className="w-full flex fixed bottom-0 right-0 left-0 justify-between bottomnav-shadow max-w-2xl mx-auto">
       <div className="bg-white py-2 w-full flex items-center justify-start rounded-tl-xl px-10">
         <TransitionLink href={"/cari"}>
           
@@ -34,7 +34,7 @@ export default function BottomNav() {
           <CameraIconOutline className="w-8 h-8 stroke-white" />
         </button>
       </div>
-      <div className=" bg-white w-full flex justify-end items-center py-2 px-10">
+      <div className=" bg-white w-full flex justify-end items-center py-2 px-10 rounded-tr-xl overflow-hidden">
         <TransitionLink href={"/bookmark"}>
           
             {pathname == "/bookmark" ? (

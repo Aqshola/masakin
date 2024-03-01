@@ -17,3 +17,8 @@ export function getStorageState(){
     }
     return null
 }
+
+export function clearStorageState(){
+    localStorage.removeItem(STORAGE_NAME)
+
+}
