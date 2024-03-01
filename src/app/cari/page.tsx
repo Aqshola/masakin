@@ -1,23 +1,23 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
 import { CookpadListRecipe } from "@/utils/cookpad";
-import { insertInDB } from "@/utils/indexDb";
-import Layout from "@/components/wrapper/layout/Layout";
-import {
-  BookmarkIcon,
-  CameraIcon,
-  FolderIcon,
-} from "@heroicons/react/24/outline";
+import { CameraIcon, FolderIcon } from "@heroicons/react/24/outline";
 import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";
-import { base64ToFile, compressImage, imageToBase64, saveRecipe } from "@/utils/helper";
+import {
+  base64ToFile,
+  compressImage,
+  imageToBase64,
+  saveRecipe,
+} from "@/utils/helper";
 import { getStorageState, setStorageState } from "@/utils/presistent";
+import { CameraContext } from "@/contexts/camera/CameraContext";
 
 type currentImage = {
   file: string;
@@ -25,6 +25,8 @@ type currentImage = {
 };
 
 export default function Index() {
+  //CONTEXT
+  const cameraContext = useContext(CameraContext);
   // REF
   const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
   const refInputCamera = useRef<HTMLInputElement | null>(null);
@@ -43,7 +45,7 @@ export default function Index() {
     state: "",
   });
   const [loadImage, setLoadImage] = useState<boolean>(false);
-  
+
   const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
@@ -107,10 +109,23 @@ export default function Index() {
     }
   }, []);
 
+  useEffect(() => {
+    if (cameraContext?.data) {
+      setCurrentImage(cameraContext.data);
+      console.log(cameraContext.data);
+    }
+  }, [cameraContext, cameraContext?.data]);
+
+  useEffect(() => {
+    if (cameraContext) {
+      setLoadImage(cameraContext.load);
+    }
+  }, [cameraContext, cameraContext?.load]);
+
   async function setterCurrentImage(files: FileList) {
-    setLoadImage(true)
+    setLoadImage(true);
     const imageFile = files[0];
-    const compress=await compressImage(imageFile)
+    const compress = await compressImage(imageFile);
     const base64File = (await imageToBase64(compress)) as string;
 
     const urlImage = getImageUrl(imageFile);
@@ -118,7 +133,7 @@ export default function Index() {
       file: base64File,
       url: urlImage,
     });
-    setLoadImage(false)
+    setLoadImage(false);
   }
   function handleOpenCamera() {
     if (!refInputCamera) return;
@@ -181,10 +196,9 @@ export default function Index() {
         onClick={handleToggleShowFormImage}
       >
         {loadImage && (
-
-        <div className="w-full flex justify-center items-center h-full">
+          <div className="w-full flex justify-center items-center h-full">
             <p className="font-medium">Loading Image ....</p>
-        </div>
+          </div>
         )}
         {!loadImage && (showFormImage || !currentImage) && (
           <div
@@ -192,9 +206,9 @@ export default function Index() {
               "flex absolute top-0 left-0 right-0 bottom-0 w-full h-full items-center justify-center z-20 bg-white bg-opacity-50 rounded-lg"
             }
           >
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col">
               <button
-                className="text-sm font-semibold flex gap-2 items-center"
+                className="text-sm font-semibold flex gap-2 items-center mb-5"
                 onClick={handleOpenUploadPicture}
               >
                 <FolderIcon className="w-5 h-5" />
@@ -211,7 +225,7 @@ export default function Index() {
           </div>
         )}
 
-        {!loadImage&& currentImage?.file && (
+        {!loadImage && currentImage?.file && (
           <div className="w-full min-h-[350px] flex justify-center items-center relative overflow-hidden">
             <Image
               fill

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Ubuntu } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
+import Provider from "@/components/wrapper/layout/Provider";
 
 const inter = Inter({ subsets: ["latin"] });
 const ubuntuFont = Ubuntu({
@@ -34,7 +35,7 @@ export default function RootLayout({
           "max-w-screen-2xl mx-auto min-h-screen"
         )}
       >
-        {children}
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
