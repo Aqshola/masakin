@@ -14,10 +14,13 @@ import { ChangeEvent, useContext, useRef } from "react";
 import { CameraContext } from "@/contexts/camera/CameraContext";
 import { compressImage, imageToBase64 } from "@/utils/helper";
 import { getImageUrl } from "@/utils/ui";
+import { ToastContext } from "@/contexts/toast/ToastContext";
 
 //SHOULD USE INSIDE COMPONENT UNDER CAMERA CONTEXT
 export default function BottomNav() {
   const cameraContext = useContext(CameraContext);
+  const toastContext = useContext(ToastContext);
+
   const refInputCamera = useRef<HTMLInputElement>(null); //HANDLE CAMERA BUTTON
 
   const pathname = usePathname();
@@ -29,6 +32,7 @@ export default function BottomNav() {
   }
 
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
+    const toast = toastContext?.create("Loading image...") || "";
     const uploadedFile = e.currentTarget.files;
     if (!cameraContext) return;
     if (!uploadedFile) return;
@@ -41,6 +45,8 @@ export default function BottomNav() {
     const urlImage = getImageUrl(imageFile);
     cameraContext.setCamera(base64File, urlImage);
     cameraContext?.setLoading(false);
+
+    toastContext?.remove(toast);
 
     if (pathname != "/cari") {
       router.push("/cari");

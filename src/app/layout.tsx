@@ -32,7 +32,7 @@ export default function RootLayout({
       <body
         className={clsx(
           poppinsFont.className,
-          "max-w-screen-2xl mx-auto min-h-screen"
+          "max-w-screen-2xl mx-auto min-h-screen relative"
         )}
       >
         <Provider>{children}</Provider>
