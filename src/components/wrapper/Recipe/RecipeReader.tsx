@@ -6,7 +6,8 @@ import RecipeCookpadCardList from "./RecipeCookpadCardList";
 import { CookpadListRecipe } from "@/utils/cookpad";
 import { generateKeyRecipe, saveRecipe } from "@/utils/helper";
 import { deleteInDB, getDataByKeyIDB } from "@/utils/indexDb";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { ToastContext } from "@/contexts/toast/ToastContext";
 type Props = {
   dataRecipe: GenerativeResponse;
   listCookpadRecipe?: Array<CookpadListRecipe>;
@@ -20,6 +21,7 @@ export default function RecipeReader({
   buttonBookmark = true,
   ...props
 }: Props) {
+  const toast = useContext(ToastContext);
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -27,26 +29,27 @@ export default function RecipeReader({
   }, []);
 
   async function handleSaveRecipe() {
-    if(isSaved){
+    if (isSaved) {
       const key = generateKeyRecipe(
         props.type,
         props.url,
         props.dataRecipe.nama_makanan
       );
-      deleteInDB(key)
-      setIsSaved(false)
-    }else{
+      deleteInDB(key);
+      setIsSaved(false);
+      toast?.create("Dihapus dari bookmark");
+    } else {
       const result = await saveRecipe(
         props.dataRecipe,
         props.image,
         props.type,
         props.url
       );
-  
+
       if (result) {
-        alert("Ok");
+        toast?.create("Ditambah ke bookmark");
       }
-      setIsSaved(true)
+      setIsSaved(true);
     }
   }
 

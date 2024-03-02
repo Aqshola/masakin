@@ -21,7 +21,8 @@ export default function ToastProvider(props: Props) {
   const [listToast, setListToast] = useState<Array<ToastData>>([]);
 
   function createToast(label: string, autoClose = true) {
-    const key = new Date().toString();
+    console.log("sas");
+    const key = crypto.randomUUID();
     const newToast: ToastData = {
       key,
       label,
@@ -29,8 +30,9 @@ export default function ToastProvider(props: Props) {
     setListToast([...listToast, newToast]);
 
     if (autoClose) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         removeToast(key);
+        clearTimeout(timeout);
       }, SHOW_DURATION * 1000);
     }
     return key;
@@ -44,7 +46,7 @@ export default function ToastProvider(props: Props) {
 
   return (
     <ToastContext.Provider value={{ create: createToast, remove: removeToast }}>
-      <div className="fixed z-40 mr-auto ml-auto left-0 right-0 w-fit h-fit flex flex-col gap-5 top-5">
+      <div className="fixed z-40 mr-auto ml-auto left-0  mx-auto right-0 w-fit h-fit flex flex-col gap-5 top-5">
         {listToast.map((toast) => (
           <Toast
             key={toast.key}
