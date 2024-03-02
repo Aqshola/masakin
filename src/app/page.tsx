@@ -13,11 +13,11 @@ export default function Home() {
 
   return (
     <main className="w-full h-screen overflow-hidden">
-      <div className="flex items-center bg-white min-h-screen flex-col gap-5 py-32">
-        <h1 className="text-5xl font-extrabold text-primary-softblack ">
+      <div className="flex items-center bg-white min-h-screen flex-col py-32">
+        <h1 className="text-5xl font-extrabold text-primary-softblack mb-5">
           Masakin
         </h1>
-        <p className="text-center text-primary-softblack w-64">
+        <p className="text-center text-primary-softblack w-64 mb-5">
           <b className="text-primary-orange">Foto</b> dan{" "}
           <b className="text-primary-orange">Cari</b> resep masakan yang kamu
           makan
