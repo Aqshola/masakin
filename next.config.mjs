@@ -13,7 +13,6 @@ const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
   cacheOnFrontEndNav: true,
-  disable: true,
 });
 
 export default withSerwist(nextConfig);
