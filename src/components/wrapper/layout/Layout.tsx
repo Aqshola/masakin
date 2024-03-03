@@ -10,7 +10,7 @@ export default function Layout({ title, ...props }: Props) {
   const showNav = pathname == "/";
 
   return (
-    <div className="relative w-full min-h-screen bg-primary-softwhite">
+    <div className="relative w-full min-h-screen bg-primary-softwhite overflow-x-hidden">
       <div id="transition-element" className="overflow-x-hidden opacity-0">
         {props.children}
       </div>
