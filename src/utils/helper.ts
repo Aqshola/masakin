@@ -61,7 +61,7 @@ export const base64ToFile = (base64: string) => {
   const arr = base64.split(",");
   if (arr.length > 0) {
     const mime = arr[0].match(/:(.*?);/);
-    let parsedMime = mime ? mime[1] : '';
+    let parsedMime = mime ? mime[1] : "";
     let bstr = atob(arr[arr.length - 1]);
     let n = bstr.length;
     let u8arr = new Uint8Array(n);
@@ -69,17 +69,17 @@ export const base64ToFile = (base64: string) => {
       u8arr[n] = bstr.charCodeAt(n);
     }
 
-    return new File([u8arr], 'File', {type:parsedMime});
+    return new File([u8arr], "File", { type: parsedMime });
   }
 
-  return null
+  return null;
 };
 
-export const compressImage= async (file:File)=>{
-  const compressedFile= await imageCompression(file, {
-    maxSizeMB:1,
-    useWebWorker:true
-  })
+export const compressImage = async (file: File) => {
+  const compressedFile = await imageCompression(file, {
+    maxSizeMB: 1,
+    useWebWorker: true,
+  });
 
-  return compressedFile
-}
+  return compressedFile;
+};

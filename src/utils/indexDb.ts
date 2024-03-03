@@ -43,16 +43,19 @@ export async function insertInDB(value: any, key: any) {
   dbLocal.close();
 }
 
-export async function deleteInDB(key:any){
-  const dbLocal=await openIDB()
-  dbLocal.delete(IDB_STORE_NAME,key)
+export async function deleteInDB(key: any) {
+  const dbLocal = await openIDB();
+  dbLocal.delete(IDB_STORE_NAME, key);
 }
 
 export async function getAllDataIDB() {
-  const dbLocal = await openIDB();
-  const allData = await dbLocal.getAll(IDB_STORE_NAME);
+  try {
+    const dbLocal = await openIDB();
+    const allData = await dbLocal.getAll(IDB_STORE_NAME);
 
-  return allData;
+    return allData;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
-
-

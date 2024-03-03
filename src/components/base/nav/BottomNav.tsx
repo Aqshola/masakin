@@ -1,3 +1,4 @@
+"use client";
 import {
   BookmarkSquareIcon as BookmarkSquareIconOutline,
   CameraIcon as CameraIconOutline,

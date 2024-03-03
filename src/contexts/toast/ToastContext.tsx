@@ -1,3 +1,5 @@
+"use client";
+
 import Toast from "@/components/base/toast/Toast";
 import { animateToastOut } from "@/libs/animation";
 import React, { createContext, useState } from "react";
@@ -21,7 +23,6 @@ export default function ToastProvider(props: Props) {
   const [listToast, setListToast] = useState<Array<ToastData>>([]);
 
   function createToast(label: string, autoClose = true) {
-    console.log("sas");
     const key = crypto.randomUUID();
     const newToast: ToastData = {
       key,

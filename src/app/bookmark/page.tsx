@@ -1,6 +1,7 @@
 "use client";
 import TransitionLink from "@/components/base/Link/TransitionLink";
 import { getAllDataIDB } from "@/utils/indexDb";
+import { Base64 } from "js-base64";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -21,16 +22,18 @@ export default function Index() {
         Buku Resep
       </h1>
       <div className="mt-10 flex flex-col gap-3 bg-white p-2 rounded">
-        {dataBookmark.length==0 && (
-          <div>
-            Gaada resep yang kesimpen 😔
-          </div>
-        )}
-        {dataBookmark.length>0 && dataBookmark.map((el, idx) => (
-          <TransitionLink href={`/detail/${el.key}?type=bookmark`} key={el.key}>
-            <div className="border p-2 rounded text-left">{el.nama_makanan}</div>
-          </TransitionLink>
-        ))}
+        {dataBookmark.length == 0 && <div>Gaada resep yang kesimpen 😔</div>}
+        {dataBookmark.length > 0 &&
+          dataBookmark.map((el, idx) => (
+            <TransitionLink
+              href={`/detail?url=${Base64.encode(el.key)}&type=bookmark`}
+              key={el.key}
+            >
+              <div className="border p-2 rounded text-left">
+                {el.nama_makanan}
+              </div>
+            </TransitionLink>
+          ))}
       </div>
     </div>
   );
