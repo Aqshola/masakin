@@ -6,7 +6,7 @@ import axios from "axios";
 import { GenerativeResponse } from "@/type/recipe";
 import { CookpadListRecipe } from "@/utils/cookpad";
 import { CameraIcon, FolderIcon } from "@heroicons/react/24/outline";
-import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
+import RecipeReader from "@/components/wrapper/recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";

@@ -1,13 +1,13 @@
 "use client";
-import RecipeReader from "@/components/wrapper/Recipe/RecipeReader";
-import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
+import RecipeReader from "@/components/wrapper/recipe/RecipeReader";
+import { RecipeCookpad, RecipeLocal } from "@/type/recipe";
 import { getDataByKeyIDB } from "@/utils/indexDb";
 import { fetcher } from "@/utils/network";
+import { instanceOfRecipeLocal } from "@/utils/typing";
 import { Base64 } from "js-base64";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { isArray } from "util";
 
 type Param = {
   searchParams: {
@@ -16,15 +16,17 @@ type Param = {
   };
 };
 export default function Index({ searchParams }: Param) {
-  const parsedURL = Base64.decode(searchParams.url);
+  const parsedURL = searchParams.url ? Base64.decode(searchParams.url) : "";
   const isBookmark = searchParams.type == "bookmark";
 
-  const { data, isLoading } = useSWR<CookpadRecipeResponse>(
+  const { data, isLoading } = useSWR<RecipeCookpad>(
     isBookmark ? null : `/api/cookpad/${parsedURL}`,
     fetcher
   );
 
-  const [dataView, setdataView] = useState<any>(data);
+  const [dataView, setdataView] = useState<
+    RecipeLocal | RecipeCookpad | undefined
+  >(data);
 
   useEffect(() => {
     void getDataRecipe();
@@ -67,7 +69,7 @@ export default function Index({ searchParams }: Param) {
           <RecipeReader
             dataRecipe={dataView}
             image={dataView.img}
-            type={dataView.type || "cookpad"}
+            type={instanceOfRecipeLocal(dataView) ? dataView.source : "cookpad"}
             url={parsedURL}
             // buttonBookmark={!isBookmark}
           />

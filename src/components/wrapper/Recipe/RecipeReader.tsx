@@ -1,6 +1,12 @@
 import { BookmarkIcon as BookmarkIconOutline } from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
-import { GenerativeResponse } from "@/type/recipe";
+import {
+  GenerativeResponse,
+  Recipe,
+  RecipeCookpad,
+  RecipeLocal,
+  RecipeType,
+} from "@/type/recipe";
 import RecipeListBox from "./RecipeListBox";
 import RecipeCookpadCardList from "./RecipeCookpadCardList";
 import { CookpadListRecipe } from "@/utils/cookpad";
@@ -8,11 +14,13 @@ import { generateKeyRecipe, saveRecipe } from "@/utils/helper";
 import { deleteInDB, getDataByKeyIDB } from "@/utils/indexDb";
 import { useContext, useEffect, useState } from "react";
 import { ToastContext } from "@/contexts/toast/ToastContext";
+import { useRouter } from "next/navigation";
+import { Base64 } from "js-base64";
 type Props = {
-  dataRecipe: GenerativeResponse;
+  dataRecipe: Recipe | RecipeLocal | RecipeCookpad;
   listCookpadRecipe?: Array<CookpadListRecipe>;
   image: string;
-  type: "cookpad" | "generative";
+  type: RecipeType;
   url?: string; //only for cookpad
   buttonBookmark?: boolean;
 };
@@ -21,6 +29,7 @@ export default function RecipeReader({
   buttonBookmark = true,
   ...props
 }: Props) {
+  const router = useRouter();
   const toast = useContext(ToastContext);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -29,12 +38,12 @@ export default function RecipeReader({
   }, []);
 
   async function handleSaveRecipe() {
+    const key = generateKeyRecipe(
+      props.type,
+      props.url,
+      props.dataRecipe.nama_makanan
+    );
     if (isSaved) {
-      const key = generateKeyRecipe(
-        props.type,
-        props.url,
-        props.dataRecipe.nama_makanan
-      );
       deleteInDB(key);
       setIsSaved(false);
       toast?.create("Dihapus dari bookmark");
@@ -45,11 +54,11 @@ export default function RecipeReader({
         props.type,
         props.url
       );
-
       if (result) {
         toast?.create("Ditambah ke bookmark");
       }
       setIsSaved(true);
+      router.prefetch(`/detail?url=${Base64.encode(key)}&type=bookmark`);
     }
   }
 

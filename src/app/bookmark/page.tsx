@@ -2,6 +2,7 @@
 import TransitionLink from "@/components/base/Link/TransitionLink";
 import { getAllDataIDB } from "@/utils/indexDb";
 import { Base64 } from "js-base64";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Index() {
@@ -24,7 +25,7 @@ export default function Index() {
       <div className="mt-10 flex flex-col gap-3 bg-white p-2 rounded">
         {dataBookmark.length == 0 && <div>Gaada resep yang kesimpen 😔</div>}
         {dataBookmark.length > 0 &&
-          dataBookmark.map((el, idx) => (
+          dataBookmark.map((el) => (
             <TransitionLink
               href={`/detail?url=${Base64.encode(el.key)}&type=bookmark`}
               key={el.key}
