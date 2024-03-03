@@ -1,11 +1,10 @@
-import { GenerativeResponse } from "@/type/recipe";
+import { Recipe } from "@/type/recipe";
 import { getDataByKeyIDB, insertInDB } from "./indexDb";
 import { getImageUrl } from "./ui";
-import sharp from "sharp";
 import imageCompression from "browser-image-compression";
 
 export async function saveRecipe(
-  dataRecipe: GenerativeResponse,
+  dataRecipe: Recipe,
   img: File | string,
   type: "cookpad" | "generative",
   url?: string //only for cookpad
