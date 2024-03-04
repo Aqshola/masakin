@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getCookpadListRecipe } from "@/utils/cookpad";
+
 
 import { redisClient } from "@/libs/redis";
 import {
@@ -10,8 +10,10 @@ import {
 } from "@/utils/server/network";
 import { initGeminiGenerative } from "@/libs/gemini";
 import { Recipe } from "@/type/recipe";
+import { getCookpadListRecipe } from "@/utils/server/cookpad";
 
 export async function POST(request: NextRequest) {
+  
   //INITIATE
   const ip = getIpRequest(request);
   const redis = redisClient;

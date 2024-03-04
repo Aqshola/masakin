@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isOpenInMobile } from "./utils/ui";
 import createMiddleware from "next-intl/middleware";
+import { isOpenInMobile } from "./utils/validation";
 
 const LIST_VALIDATE = {
   "/cari": "/cari",
@@ -16,6 +16,7 @@ export default createMiddleware({
   // Used when no locale matches
   defaultLocale: "id",
 });
+
 
 export function middleware(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "";

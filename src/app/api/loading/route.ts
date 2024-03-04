@@ -1,6 +1,5 @@
 import { redisClient } from "@/libs/redis";
-import { getIpRequest } from "@/utils/network";
-import { getLoadingRedis } from "@/utils/server/network";
+import { getIpRequest, getLoadingRedis } from "@/utils/server/network";
 import { NextRequest, NextResponse } from "next/server";
 import { EventNotifier, getSSEWriter } from "ts-sse";
 

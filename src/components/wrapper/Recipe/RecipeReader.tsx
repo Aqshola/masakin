@@ -1,24 +1,21 @@
 import { BookmarkIcon as BookmarkIconOutline } from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
-import {
-  GenerativeResponse,
-  Recipe,
-  RecipeCookpad,
-  RecipeLocal,
-  RecipeType,
-} from "@/type/recipe";
+import { Recipe, RecipeCookpad, RecipeCookpadMini, RecipeLocal, RecipeType } from "@/type/recipe";
 import RecipeListBox from "./RecipeListBox";
 import RecipeCookpadCardList from "./RecipeCookpadCardList";
-import { CookpadListRecipe } from "@/utils/cookpad";
-import { generateKeyRecipe, saveRecipe } from "@/utils/helper";
-import { deleteInDB, getDataByKeyIDB } from "@/utils/indexDb";
 import { useContext, useEffect, useState } from "react";
 import { ToastContext } from "@/contexts/toast/ToastContext";
 import { useRouter } from "next/navigation";
-import { Base64 } from "js-base64";
+import {
+  deleteRecipeLocal,
+  generateKeyRecipeLocal,
+  generateUrlDetailRecipeLocal,
+  getRecipeByKeyLocal,
+  saveRecipeLocal,
+} from "@/utils/client/flow";
 type Props = {
   dataRecipe: Recipe | RecipeLocal | RecipeCookpad;
-  listCookpadRecipe?: Array<CookpadListRecipe>;
+  listCookpadRecipe?: Array<RecipeCookpadMini>;
   image: string;
   type: RecipeType;
   url?: string; //only for cookpad
@@ -29,6 +26,7 @@ export default function RecipeReader({
   buttonBookmark = true,
   ...props
 }: Props) {
+
   const router = useRouter();
   const toast = useContext(ToastContext);
   const [isSaved, setIsSaved] = useState(false);
@@ -38,37 +36,33 @@ export default function RecipeReader({
   }, []);
 
   async function handleSaveRecipe() {
-    const key = generateKeyRecipe(
+    const key = generateKeyRecipeLocal(
       props.type,
       props.url,
       props.dataRecipe.nama_makanan
     );
+    const urlDetail=generateUrlDetailRecipeLocal(key)
+
     if (isSaved) {
-      deleteInDB(key);
+      deleteRecipeLocal(key);
       setIsSaved(false);
       toast?.create("Dihapus dari bookmark");
-    } else {
-      const result = await saveRecipe(
-        props.dataRecipe,
-        props.image,
-        props.type,
-        props.url
-      );
-      if (result) {
-        toast?.create("Ditambah ke bookmark");
-      }
-      setIsSaved(true);
-      router.prefetch(`/detail?url=${Base64.encode(key)}&type=bookmark`);
+      return;
     }
+
+    await saveRecipeLocal(props.dataRecipe, props.image, props.type, props.url);
+    toast?.create('Ditambah ke bookmark')
+    setIsSaved(true)
+    router.prefetch(urlDetail)
   }
 
   async function checkRecipeSaved() {
-    const key = generateKeyRecipe(
+    const key = generateKeyRecipeLocal(
       props.type,
       props.url,
       props.dataRecipe.nama_makanan
     );
-    const data = await getDataByKeyIDB(key);
+    const data = await getRecipeByKeyLocal(key);
     if (data) {
       setIsSaved(true);
     }

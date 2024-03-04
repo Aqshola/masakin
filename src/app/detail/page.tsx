@@ -1,8 +1,10 @@
 "use client";
 import RecipeReader from "@/components/wrapper/recipe/RecipeReader";
 import { RecipeCookpad, RecipeLocal } from "@/type/recipe";
-import { getDataByKeyIDB } from "@/utils/indexDb";
-import { fetcher } from "@/utils/network";
+import { getRecipeByKeyLocal } from "@/utils/client/flow";
+import { fetcher } from "@/utils/common";
+
+
 import { instanceOfRecipeLocal } from "@/utils/typing";
 import { Base64 } from "js-base64";
 import Image from "next/image";
@@ -16,6 +18,7 @@ type Param = {
   };
 };
 export default function Index({ searchParams }: Param) {
+  
   const parsedURL = searchParams.url ? Base64.decode(searchParams.url) : "";
   const isBookmark = searchParams.type == "bookmark";
 
@@ -40,8 +43,10 @@ export default function Index({ searchParams }: Param) {
 
   async function getDataRecipe() {
     if (isBookmark && parsedURL) {
-      const dataIDB = await getDataByKeyIDB(parsedURL);
-      setdataView(dataIDB);
+      const dataIDB = await getRecipeByKeyLocal(parsedURL);
+      if(dataIDB){
+        setdataView(dataIDB);
+      }
     }
   }
 
@@ -71,7 +76,6 @@ export default function Index({ searchParams }: Param) {
             image={dataView.img}
             type={instanceOfRecipeLocal(dataView) ? dataView.source : "cookpad"}
             url={parsedURL}
-            // buttonBookmark={!isBookmark}
           />
         </>
       )}

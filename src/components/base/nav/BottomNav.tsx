@@ -8,14 +8,12 @@ import {
   BookmarkSquareIcon as BookmarkSquareIconSolid,
   HomeIcon as HomeIconSolid,
 } from "@heroicons/react/24/solid";
-import {} from "@heroicons/react/24/outline";
 import { usePathname, useRouter } from "next/navigation";
 import TransitionLink from "../Link/TransitionLink";
 import { ChangeEvent, useContext, useRef } from "react";
 import { CameraContext } from "@/contexts/camera/CameraContext";
-import { compressImage, imageToBase64 } from "@/utils/helper";
-import { getImageUrl } from "@/utils/ui";
 import { ToastContext } from "@/contexts/toast/ToastContext";
+import { getUploadImageData } from "@/utils/client/flow";
 
 //SHOULD USE INSIDE COMPONENT UNDER CAMERA CONTEXT
 export default function BottomNav() {
@@ -41,10 +39,8 @@ export default function BottomNav() {
     cameraContext?.setLoading(true);
 
     const imageFile = uploadedFile[0];
-    const compress = await compressImage(imageFile);
-    const base64File = (await imageToBase64(compress)) as string;
-    const urlImage = getImageUrl(imageFile);
-    cameraContext.setCamera(base64File, urlImage);
+    const dataUpload = await getUploadImageData(imageFile)
+    cameraContext.setCamera(dataUpload.base64File, dataUpload.urlImage);
     cameraContext?.setLoading(false);
 
     toastContext?.remove(toast);

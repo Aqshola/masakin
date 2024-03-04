@@ -1,12 +1,24 @@
 import { Recipe, RecipeLocal, RecipeType } from "@/type/recipe";
 import imageCompression from "browser-image-compression";
-import { deleteKeyIDB, getDataByKeyIDB, insertKeyIDB } from "./indexedDB";
+import { deleteKeyIDB, getAllDataIDB, getDataByKeyIDB, initStoreIDB, insertKeyIDB } from "./indexedDB";
+import { clearStorageState, getStorageState, setStorageState } from "./presistentState";
+import { Base64 } from "js-base64";
+
+
+
 
 // RECIPE LOCAL FLOW
-
 export const MASAKIN_IDB_NAME = "masakin-db";
 export const MASAKIN_IDB_VERSION = 1;
 export const MASAKIN_IDB_STORE_NAME = "masakin-bookmark";
+
+export function generateUrlDetailRecipeLocal(key:string,bookmark=true){
+  const url=`/detail?url=${Base64.encode(key)}`
+  if(bookmark){
+    return url+`&type=bookmark`
+  }
+  return url
+}
 
 export function generateKeyRecipeLocal(
   type: RecipeType,
@@ -23,6 +35,9 @@ export function generateKeyRecipeLocal(
   return "";
 }
 
+export async function initDBRecipeLocal(){
+  await initStoreIDB(MASAKIN_IDB_STORE_NAME,MASAKIN_IDB_NAME,MASAKIN_IDB_VERSION)
+}
 export async function saveRecipeLocal(
   dataRecipe: Recipe,
   img: File | string,
@@ -33,8 +48,8 @@ export async function saveRecipeLocal(
   await insertKeyIDB(
     { ...dataRecipe, img, source: type },
     key,
-    MASAKIN_IDB_NAME,
     MASAKIN_IDB_STORE_NAME,
+    MASAKIN_IDB_NAME,
     MASAKIN_IDB_VERSION
   );
 }
@@ -51,15 +66,38 @@ export async function deleteRecipeLocal(key: string) {
 export async function getRecipeByKeyLocal(
   key: string
 ): Promise<RecipeLocal | null> {
-  const dataIDB = (await getDataByKeyIDB(
+  const dataIDB:RecipeLocal = await getDataByKeyIDB(
     key,
     MASAKIN_IDB_STORE_NAME,
     MASAKIN_IDB_NAME,
     MASAKIN_IDB_VERSION
-  )) as RecipeLocal;
+  )
 
   return dataIDB;
 }
+export async function getAllRecipeLocal(){
+  const dataIDB:Array<RecipeLocal> = await getAllDataIDB(MASAKIN_IDB_STORE_NAME,MASAKIN_IDB_NAME,MASAKIN_IDB_VERSION)
+  return dataIDB
+}
+
+
+
+
+// PRESISTENT FLOW
+const PRESISTENT_STORE="masakin-state"
+export function setPresistentState(state:any){
+  setStorageState(state, PRESISTENT_STORE)
+}
+
+export function getPresistentState<T>():T{
+  const data=getStorageState(PRESISTENT_STORE)
+  return data as T
+}
+
+export function clearPresistentState(){
+  clearStorageState(PRESISTENT_STORE)
+}
+
 
 // IMAGE HANDLER FLOW
 export function imageToBase64(file: File): Promise<string> {

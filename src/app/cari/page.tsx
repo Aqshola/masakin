@@ -1,28 +1,25 @@
 "use client";
 
 import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
-import { getImageUrl } from "@/utils/ui";
 import axios from "axios";
-import { GenerativeResponse } from "@/type/recipe";
-import { CookpadListRecipe } from "@/utils/cookpad";
+import { GenerativeResponse, RecipeCookpadMini } from "@/type/recipe";
 import { CameraIcon, FolderIcon } from "@heroicons/react/24/outline";
 import RecipeReader from "@/components/wrapper/recipe/RecipeReader";
 import Image from "next/image";
 import Button from "@/components/base/button/Button";
 import ProgressBar from "@/components/base/loader/Progress";
-import {
-  base64ToFile,
-  compressImage,
-  imageToBase64,
-  saveRecipe,
-} from "@/utils/helper";
-import { getStorageState, setStorageState } from "@/utils/presistent";
 import { CameraContext } from "@/contexts/camera/CameraContext";
+import { Loading } from "@/type/loading";
+import { ImageState } from "@/type/image";
+import { base64ToImage, getPresistentState, getUploadImageData, setPresistentState } from "@/utils/client/flow";
 
-type currentImage = {
-  file: string;
-  url: string;
-};
+
+type PresistentState={
+  currentImage: ImageState | undefined;
+  dataRecipe: GenerativeResponse;
+  showButtonSearch: boolean;
+  listCookpadRecipe: RecipeCookpadMini[]
+}
 
 export default function Index() {
   //CONTEXT
@@ -34,13 +31,13 @@ export default function Index() {
   // DATA STATE
   const [dataRecipe, setDataRecipe] = useState<GenerativeResponse>();
   const [listCookpadRecipe, setListCookpadRecipe] = useState<
-    CookpadListRecipe[]
+    Array<RecipeCookpadMini>
   >([]);
-  const [currentImage, setCurrentImage] = useState<currentImage>();
+  const [currentImage, setCurrentImage] = useState<ImageState>();
 
   // UI STATE
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingState, setLoadingState] = useState({
+  const [loadingState, setLoadingState] = useState<Loading>({
     percent: 0,
     state: "",
   });
@@ -50,6 +47,8 @@ export default function Index() {
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
 
+
+  //HANDLE LOADING STATE
   useEffect(() => {
     let eventSource: EventSource;
     if (loading) {
@@ -80,17 +79,17 @@ export default function Index() {
     };
   }, [loading]);
 
-  //PRESISTENT STATE
+  //STORE PRESISTENT STATE
   useEffect(() => {
     let timeout = setTimeout(() => {
       if (dataRecipe) {
-        const savedPresistent = {
+        const savedPresistent:PresistentState = {
           currentImage,
           dataRecipe,
           showButtonSearch,
           listCookpadRecipe,
         };
-        setStorageState(savedPresistent);
+        setPresistentState(savedPresistent);
       }
     }, 500);
     return () => {
@@ -98,9 +97,9 @@ export default function Index() {
     };
   }, [currentImage, dataRecipe, listCookpadRecipe]);
 
-  //SET PRESISTENT
+  //GET PRESISTENT STATE
   useEffect(() => {
-    const data = getStorageState();
+    const data = getPresistentState<PresistentState>();
     if (data) {
       setCurrentImage(data.currentImage);
       setDataRecipe(data.dataRecipe);
@@ -109,32 +108,22 @@ export default function Index() {
     }
   }, []);
 
+  //GET CAMERA FROM BOTTOM NAV CAMERA BUTTON
   useEffect(() => {
     if (cameraContext?.data) {
       setCurrentImage(cameraContext.data);
-      console.log(cameraContext.data);
     }
   }, [cameraContext, cameraContext?.data]);
 
+  //GET LOAIDNG STATE FROM BOTTOM NAV CAMERA PROCESS
   useEffect(() => {
     if (cameraContext) {
       setLoadImage(cameraContext.load);
     }
   }, [cameraContext, cameraContext?.load]);
 
-  async function setterCurrentImage(files: FileList) {
-    setLoadImage(true);
-    const imageFile = files[0];
-    const compress = await compressImage(imageFile);
-    const base64File = (await imageToBase64(compress)) as string;
+  
 
-    const urlImage = getImageUrl(imageFile);
-    setCurrentImage({
-      file: base64File,
-      url: urlImage,
-    });
-    setLoadImage(false);
-  }
   function handleOpenCamera() {
     if (!refInputCamera) return;
     refInputCamera.current?.click();
@@ -145,25 +134,36 @@ export default function Index() {
     refInputPictureHidden.current.click();
   }
 
-  function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
+  function handleToggleShowFormImage() {
+    if (!currentImage) return;
+    setShowFormImage(!showFormImage);
+  }
+
+  async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
     if (!uploadedFile) return;
 
-    setterCurrentImage(uploadedFile);
+    setLoadImage(true)
+    
+    const currentImageFile=uploadedFile[0]
+    const uploadData=await getUploadImageData(currentImageFile)
+
+    
+    setCurrentImage({
+      file: uploadData.base64File,
+      url: uploadData.urlImage,
+    });
+    
+    setLoadImage(false);
     setShowFormImage(false);
     setShowButtonSearch(true);
     setDataRecipe(undefined);
     setListCookpadRecipe([]);
   }
 
-  function handleToggleShowFormImage() {
-    if (!currentImage) return;
-    setShowFormImage(!showFormImage);
-  }
-
   async function handleSearchMasak() {
     if (!currentImage) return;
-    const fileImage = base64ToFile(currentImage?.file);
+    const fileImage = base64ToImage(currentImage?.file);
     if (!fileImage) return;
     setIsError(false);
     setShowButtonSearch(false);

@@ -1,10 +1,10 @@
 "use client";
 
 import Layout from "@/components/wrapper/layout/Layout";
-import CameraProvider from "@/contexts/camera/CameraContext";
 import { animatePageIn } from "@/libs/animation";
-import { clearStorageState } from "@/utils/presistent";
-import { eventWindowBeforeClose } from "@/utils/ui";
+import { eventWindowBeforeClose } from "@/utils/client/event";
+import { clearPresistentState } from "@/utils/client/flow";
+
 import { useEffect } from "react";
 
 export default function Template({ children }: { children: React.ReactNode }) {
@@ -13,7 +13,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    eventWindowBeforeClose(clearStorageState);
+    eventWindowBeforeClose(clearPresistentState);
     return () => {
       window.removeEventListener("unload", () => {});
     };

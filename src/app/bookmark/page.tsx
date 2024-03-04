@@ -1,19 +1,20 @@
 "use client";
 import TransitionLink from "@/components/base/Link/TransitionLink";
-import { getAllDataIDB } from "@/utils/indexDb";
-import { Base64 } from "js-base64";
-import { useRouter } from "next/navigation";
+import { RecipeLocal } from "@/type/recipe";
+import { generateUrlDetailRecipeLocal, getAllRecipeLocal } from "@/utils/client/flow";
+
 import { useEffect, useState } from "react";
 
 export default function Index() {
-  const [dataBookmark, setDataBookmark] = useState<Array<any>>([]);
+  const [dataBookmark, setDataBookmark] = useState<Array<RecipeLocal>>([]);
+  
 
   useEffect(() => {
     void getDataBookmark();
   }, []);
 
   async function getDataBookmark() {
-    const dataIDB = await getAllDataIDB();
+    const dataIDB = await getAllRecipeLocal();
     setDataBookmark(dataIDB);
   }
 
@@ -27,7 +28,7 @@ export default function Index() {
         {dataBookmark.length > 0 &&
           dataBookmark.map((el) => (
             <TransitionLink
-              href={`/detail?url=${Base64.encode(el.key)}&type=bookmark`}
+              href={generateUrlDetailRecipeLocal(el.key)}
               key={el.key}
             >
               <div className="border p-2 rounded text-left">
