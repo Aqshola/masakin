@@ -19,7 +19,7 @@ type Props = {
 
 export const ToastContext = createContext<Context | null>(null);
 export default function ToastProvider(props: Props) {
-  const SHOW_DURATION = 5;
+  const SHOW_DURATION = 2;
   const [listToast, setListToast] = useState<Array<ToastData>>([]);
 
   function createToast(label: string, autoClose = true) {

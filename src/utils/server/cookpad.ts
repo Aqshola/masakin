@@ -1,12 +1,13 @@
-import { CookpadRecipeResponse, GenerativeResponse } from "@/type/recipe";
+import { RecipeCookpad, RecipeCookpadMini } from "@/type/recipe";
 import { load } from "cheerio";
+import { cleanTextOnlyFromHTML } from "../formatter";
 
-export type CookpadListRecipe = {
-  title: string;
-  url: string;
-  image: string;
-};
 export async function getCookpadListRecipe(food: string) {
+  //SELECTOR
+  const LIST_SELECTOR = 'li[itemprop="itemListElement"]';
+  const TITLE_SELECTOR = "h2 a";
+  const IMAGE_SELECTOR = ".w-20 picture img";
+
   const result = await fetch(`https://cookpad.com/id/cari/${food}`, {
     headers: {
       "content-type": "text/html;charset=UTF-8",
@@ -16,16 +17,13 @@ export async function getCookpadListRecipe(food: string) {
 
   const render = load(resultData);
 
-  const listRecipe: Array<CookpadListRecipe> = [];
-  render('li[itemprop="itemListElement"]').each((_, el) => {
-    const list = render(el).find("h2 a");
-    const title = list
-      .text()
-      .replace(/\n/g, "")
-      .replace(/[0-9.]/g, " ")
-      .trimStart();
+  const listRecipe: Array<RecipeCookpadMini> = [];
+  render(LIST_SELECTOR).each((_, el) => {
+    const list = render(el).find(TITLE_SELECTOR);
+
+    const title = cleanTextOnlyFromHTML(list.text());
     const url = list.attr("href") || "";
-    const image = render(el).find(".w-20 picture img").attr("src") || "";
+    const image = render(el).find(IMAGE_SELECTOR).attr("src") || "";
 
     listRecipe.push({
       title,
@@ -35,7 +33,14 @@ export async function getCookpadListRecipe(food: string) {
   });
   return listRecipe;
 }
+
 export async function getCookpadRecipe(url: string) {
+  //SELECTOR
+  const IMAGE_SELECTOR = "#recipe_image";
+  const TITLE_SELECTOR = "h1";
+  const INGRIDIENT_LIST_SELECTOR = ".ingredient-list li";
+  const STEP_LIST_SELECTOR = "#steps li";
+
   const result = await fetch(`https://cookpad.com/${url}`, {
     headers: {
       "content-type": "text/html;charset=UTF-8",
@@ -48,27 +53,24 @@ export async function getCookpadRecipe(url: string) {
   const listIngridients: string[] = [];
   const listSteps: string[] = [];
 
-  const image = render("#recipe_image").find("img").attr("src") || "";
-  const title = render("h1").text();
+  const image = render(IMAGE_SELECTOR).find("img").attr("src") || "";
+  const title = render(TITLE_SELECTOR).text();
 
-  render(".ingredient-list li").each((_, element) => {
+  render(INGRIDIENT_LIST_SELECTOR).each((_, element) => {
     const text = render(element).text();
     listIngridients.push(text);
   });
 
-  render("#steps li").each((_, element) => {
+  render(STEP_LIST_SELECTOR).each((_, element) => {
     const text = render(element).text();
     listSteps.push(text);
   });
 
-  const returObject: CookpadRecipeResponse = {
+  const returObject: RecipeCookpad = {
     img: image,
     bahan_baku: listIngridients,
     deskripsi: "",
     langkah_pembuatan: listSteps,
-    makanan_mirip: [],
-    makanan_pendamping: [],
-    minuman_pendamping: [],
     nama_makanan: title,
   };
   return returObject;

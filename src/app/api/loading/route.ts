@@ -1,5 +1,5 @@
 import { redisClient } from "@/libs/redis";
-import { getIpRequest } from "@/utils/network";
+import { getIpRequest, getLoadingRedis } from "@/utils/server/network";
 import { NextRequest, NextResponse } from "next/server";
 import { EventNotifier, getSSEWriter } from "ts-sse";
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
   const syncStatusStream = async (notifier: SyncEvents) => {
     interValCurrent = setInterval(async () => {
-      const loadingStatus = await redisClient.get(`${ip}-loading`);
+      const loadingStatus = await getLoadingRedis(redisClient, ip);
       notifier.update({
         data: {
           loading: loadingStatus,

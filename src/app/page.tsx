@@ -2,15 +2,10 @@
 
 import Button from "@/components/base/button/Button";
 import PhoneFrame from "@/components/unique/phone frame/PhoneFrame";
-import { initDb } from "@/utils/indexDb";
 import Link from "next/link";
-import { useEffect } from "react";
+
 
 export default function Home() {
-  useEffect(() => {
-    void initDb();
-  }, []);
-
   return (
     <main className="w-full h-screen overflow-hidden">
       <div className="flex items-center bg-white min-h-screen flex-col py-32">

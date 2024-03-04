@@ -1,18 +1,23 @@
 import { BookmarkIcon as BookmarkIconOutline } from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
-import { GenerativeResponse } from "@/type/recipe";
+import { Recipe, RecipeCookpad, RecipeCookpadMini, RecipeLocal, RecipeType } from "@/type/recipe";
 import RecipeListBox from "./RecipeListBox";
 import RecipeCookpadCardList from "./RecipeCookpadCardList";
-import { CookpadListRecipe } from "@/utils/cookpad";
-import { generateKeyRecipe, saveRecipe } from "@/utils/helper";
-import { deleteInDB, getDataByKeyIDB } from "@/utils/indexDb";
 import { useContext, useEffect, useState } from "react";
 import { ToastContext } from "@/contexts/toast/ToastContext";
+import { useRouter } from "next/navigation";
+import {
+  deleteRecipeLocal,
+  generateKeyRecipeLocal,
+  generateUrlDetailRecipeLocal,
+  getRecipeByKeyLocal,
+  saveRecipeLocal,
+} from "@/utils/client/flow";
 type Props = {
-  dataRecipe: GenerativeResponse;
-  listCookpadRecipe?: Array<CookpadListRecipe>;
+  dataRecipe: Recipe | RecipeLocal | RecipeCookpad;
+  listCookpadRecipe?: Array<RecipeCookpadMini>;
   image: string;
-  type: "cookpad" | "generative";
+  type: RecipeType;
   url?: string; //only for cookpad
   buttonBookmark?: boolean;
 };
@@ -21,6 +26,8 @@ export default function RecipeReader({
   buttonBookmark = true,
   ...props
 }: Props) {
+
+  const router = useRouter();
   const toast = useContext(ToastContext);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -29,37 +36,33 @@ export default function RecipeReader({
   }, []);
 
   async function handleSaveRecipe() {
-    if (isSaved) {
-      const key = generateKeyRecipe(
-        props.type,
-        props.url,
-        props.dataRecipe.nama_makanan
-      );
-      deleteInDB(key);
-      setIsSaved(false);
-      toast?.create("Dihapus dari bookmark");
-    } else {
-      const result = await saveRecipe(
-        props.dataRecipe,
-        props.image,
-        props.type,
-        props.url
-      );
-
-      if (result) {
-        toast?.create("Ditambah ke bookmark");
-      }
-      setIsSaved(true);
-    }
-  }
-
-  async function checkRecipeSaved() {
-    const key = generateKeyRecipe(
+    const key = generateKeyRecipeLocal(
       props.type,
       props.url,
       props.dataRecipe.nama_makanan
     );
-    const data = await getDataByKeyIDB(key);
+    const urlDetail=generateUrlDetailRecipeLocal(key)
+
+    if (isSaved) {
+      deleteRecipeLocal(key);
+      setIsSaved(false);
+      toast?.create("Dihapus dari bookmark");
+      return;
+    }
+
+    await saveRecipeLocal(props.dataRecipe, props.image, props.type, props.url);
+    toast?.create('Ditambah ke bookmark')
+    setIsSaved(true)
+    router.prefetch(urlDetail)
+  }
+
+  async function checkRecipeSaved() {
+    const key = generateKeyRecipeLocal(
+      props.type,
+      props.url,
+      props.dataRecipe.nama_makanan
+    );
+    const data = await getRecipeByKeyLocal(key);
     if (data) {
       setIsSaved(true);
     }
