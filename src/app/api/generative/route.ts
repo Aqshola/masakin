@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
     imageCompressed.toString("base64")
   );
   const responseModel = modelResult.response;
+  console.log(responseModel.text(),'TEXT RESPONSE')
   const jsonResponseModel = JSON.parse(responseModel.text()) as Recipe;
 
   setLoadingRedis(redis, ip, { percent: 70, state: "Getting Cookpad" });

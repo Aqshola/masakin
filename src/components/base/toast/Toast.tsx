@@ -1,27 +1,60 @@
-import { animateToastIn } from "@/libs/animation";
+import { animateToastIn, animateToastOut } from "@/libs/animation";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type Props = {
   label: string;
   callbackClose: (param?: any) => void;
+  callbackAutoClose?:(param?: any) => void;
+  show?: boolean;
+  autoClose?: boolean;
+  index?: number;
 };
-export default function Toast(props: Props) {
-  useEffect(() => {
-    animateToastIn();
+function Toast(props: Props) {
+  const refToast = useRef<HTMLDivElement>(null);
+  const DURATION_SHOW = 3;
+  const [show, setshow] = useState(props.show);
+
+  useLayoutEffect(() => {
+    animateToastIn(refToast);
   }, []);
 
-  function handleClickClose() {
-    if (props.callbackClose) {
-      props.callbackClose();
+  useEffect(()=>{
+    let timeout=setTimeout(()=>{
+      handleAutoClose()
+    },DURATION_SHOW*1000)
+
+    return ()=>{
+      clearTimeout(timeout)
     }
+  },[])
+  
+  function handleAutoClose(){
+    animateToastOut(refToast, () => {
+    });
   }
+
+  function handleClickClose() {
+    if (!refToast) return;
+    animateToastOut(refToast, () => {
+      if (props.callbackClose) {
+        props.callbackClose();
+      }
+    });
+    
+  }
+
   return (
-    <div className="flex gap-2 items-center p-2 shadow-lg rounded-lg border top-5 bg-white z-40 w-fit h-fit toast">
+    <div
+      ref={refToast}
+      className="flex gap-2 items-center py-4 px-3 border border-b-2 top-5 bg-white z-40 w-full  h-fit translate-x-full justify-between"
+    >
+      <p>{props.label}</p>
       <button onClick={handleClickClose}>
         <XMarkIcon className="w-4 h-4" />
       </button>
-      <p>{props.label}</p>
     </div>
   );
 }
+
+export default Toast;

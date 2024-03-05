@@ -12,6 +12,7 @@ import { CameraContext } from "@/contexts/camera/CameraContext";
 import { Loading } from "@/type/loading";
 import { ImageState } from "@/type/image";
 import { base64ToImage, getPresistentState, getUploadImageData, setPresistentState } from "@/utils/client/flow";
+import { ToastContext } from "@/contexts/toast/ToastContext";
 
 
 type PresistentState={
@@ -112,6 +113,9 @@ export default function Index() {
   useEffect(() => {
     if (cameraContext?.data) {
       setCurrentImage(cameraContext.data);
+      setDataRecipe(undefined)
+      setListCookpadRecipe([])
+      setShowButtonSearch(true)
     }
   }, [cameraContext, cameraContext?.data]);
 
@@ -147,7 +151,6 @@ export default function Index() {
     
     const currentImageFile=uploadedFile[0]
     const uploadData=await getUploadImageData(currentImageFile)
-
     
     setCurrentImage({
       file: uploadData.base64File,
@@ -190,6 +193,8 @@ export default function Index() {
         Cari Resep
       </h1>
 
+
+      
       {/* IMAGE */}
       <div
         className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
@@ -252,6 +257,7 @@ export default function Index() {
           ref={refInputPictureHidden}
         />
       </div>
+
 
       {showButtonSearch && (
         <Button

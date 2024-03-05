@@ -43,7 +43,7 @@ export default function BottomNav() {
     cameraContext.setCamera(dataUpload.base64File, dataUpload.urlImage);
     cameraContext?.setLoading(false);
 
-    toastContext?.remove(toast);
+    
 
     if (pathname != "/cari") {
       router.push("/cari");

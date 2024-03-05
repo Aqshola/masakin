@@ -1,5 +1,6 @@
 import gsap from "gsap";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { RefObject } from "react";
 export const animatePageIn = () => {
   const transitionElement = document.getElementById("transition-element");
 
@@ -33,27 +34,24 @@ export const animatePageOut = (href: string, router: AppRouterInstance) => {
   }
 };
 
-export const animateToastIn = () => {
-  const transitionElement = document.getElementsByClassName("toast");
-  if (transitionElement) {
+export const animateToastIn = (toast:RefObject<HTMLDivElement>) => {
+  
+  if (toast) {
     const tl = gsap.timeline();
-    tl.set(transitionElement, {
-      y: -100,
-    }).to(transitionElement, {
-      y: 0,
-      duration: 0.8,
+    tl.to(toast.current, {
+      x: 0,
+      duration: 0.5,
     });
   }
 };
 
-export const animateToastOut = (callback?: (param?: any) => void) => {
-  const transitionElement = document.getElementsByClassName("toast");
-  if (transitionElement) {
+export const animateToastOut = (toast:RefObject<HTMLDivElement>,callback?: (param?: any) => void) => {
+  
+  if (toast) {
     const tl = gsap.timeline();
-    tl.to(transitionElement, {
-      x: 100,
-      opacity: 0,
-      duration: 0.8,
+    tl.to(toast.current, {
+      x: "100%",
+      duration: 0.5,
       onComplete: () => {
         if (callback) {
           callback();

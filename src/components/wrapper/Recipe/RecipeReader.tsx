@@ -44,9 +44,9 @@ export default function RecipeReader({
     const urlDetail=generateUrlDetailRecipeLocal(key)
 
     if (isSaved) {
-      deleteRecipeLocal(key);
-      setIsSaved(false);
+      await deleteRecipeLocal(key);
       toast?.create("Dihapus dari bookmark");
+      setIsSaved(false);
       return;
     }
 
