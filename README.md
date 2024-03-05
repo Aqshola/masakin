@@ -11,6 +11,8 @@ Stack Using
 - Cek Bookmarked ✅
 - Presistent State ✅
 - Animation ✅
-- Handling Error
-- PWA 
+- Handling Error  ✅
+- PWA (IMPROVE FULL OFFLINE)
+- Analytics
+- Sentry
 - Handle delete bookmark ✅
