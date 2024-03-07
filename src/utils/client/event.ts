@@ -15,6 +15,7 @@ export function eventGenerateMetadata(title?: string, description?: string) {
   const APP_DEFAULT_TITLE = title || "Masakin";
   const APP_TITLE_TEMPLATE = title || "%s - Masakin";
   const APP_DESCRIPTION = description || "Cari resep yang kamu makan";
+  const APP_IMAGE = "/img/meta.png";
 
   const metadata: Metadata = {
     applicationName: APP_NAME,
@@ -41,6 +42,7 @@ export function eventGenerateMetadata(title?: string, description?: string) {
         template: APP_TITLE_TEMPLATE,
       },
       description: APP_DESCRIPTION,
+      images: APP_IMAGE,
     },
     twitter: {
       card: "summary",
@@ -49,6 +51,7 @@ export function eventGenerateMetadata(title?: string, description?: string) {
         template: APP_TITLE_TEMPLATE,
       },
       description: APP_DESCRIPTION,
+      images: APP_IMAGE,
     },
   };
 
