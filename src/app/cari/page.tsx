@@ -11,21 +11,25 @@ import ProgressBar from "@/components/base/loader/Progress";
 import { CameraContext } from "@/contexts/camera/CameraContext";
 import { Loading } from "@/type/loading";
 import { ImageState } from "@/type/image";
-import { base64ToImage, getPresistentState, getUploadImageData, setPresistentState } from "@/utils/client/flow";
+import {
+  base64ToImage,
+  getPresistentState,
+  getUploadImageData,
+  setPresistentState,
+} from "@/utils/client/flow";
 import { ToastContext } from "@/contexts/toast/ToastContext";
 import { isImageFile } from "@/utils/validation";
 
-
-type PresistentState={
+type PresistentState = {
   currentImage: ImageState | undefined;
   dataRecipe: GenerativeResponse;
   showButtonSearch: boolean;
-  listCookpadRecipe: RecipeCookpadMini[]
-}
+  listCookpadRecipe: RecipeCookpadMini[];
+};
 
 export default function Index() {
   //CONTEXT
-  const toast=useContext(ToastContext)
+  const toast = useContext(ToastContext);
   const cameraContext = useContext(CameraContext);
   // REF
   const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
@@ -49,7 +53,6 @@ export default function Index() {
   const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
-
 
   //HANDLE LOADING STATE
   useEffect(() => {
@@ -86,7 +89,7 @@ export default function Index() {
   useEffect(() => {
     let timeout = setTimeout(() => {
       if (dataRecipe) {
-        const savedPresistent:PresistentState = {
+        const savedPresistent: PresistentState = {
           currentImage,
           dataRecipe,
           showButtonSearch,
@@ -115,9 +118,9 @@ export default function Index() {
   useEffect(() => {
     if (cameraContext?.data) {
       setCurrentImage(cameraContext.data);
-      setDataRecipe(undefined)
-      setListCookpadRecipe([])
-      setShowButtonSearch(true)
+      setDataRecipe(undefined);
+      setListCookpadRecipe([]);
+      setShowButtonSearch(true);
     }
   }, [cameraContext, cameraContext?.data]);
 
@@ -127,8 +130,6 @@ export default function Index() {
       setLoadImage(cameraContext.load);
     }
   }, [cameraContext, cameraContext?.load]);
-
-  
 
   function handleOpenCamera() {
     if (!refInputCamera) return;
@@ -147,25 +148,23 @@ export default function Index() {
 
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
-    if (!uploadedFile) return;
-    setLoadImage(true)
-    const currentImageFile=uploadedFile[0]
+    if (!uploadedFile || uploadedFile.length == 0) return;
+    const currentImageFile = uploadedFile[0];
+    const validImage = isImageFile(currentImageFile);
 
-    const validImage=isImageFile(currentImageFile)
-
-    if(!validImage){
-      toast?.create("Upload foto aja ya")
-      setLoadImage(false)
-      return 
+    if (!validImage) {
+      toast?.create("Unggah gambar aja yaa");
     }
 
-    const uploadData=await getUploadImageData(currentImageFile)
-    
+    setLoadImage(true);
+
+    const uploadData = await getUploadImageData(currentImageFile);
+
     setCurrentImage({
       file: uploadData.base64File,
       url: uploadData.urlImage,
     });
-    
+
     setLoadImage(false);
     setShowFormImage(false);
     setShowButtonSearch(true);
@@ -202,8 +201,6 @@ export default function Index() {
         Cari Resep
       </h1>
 
-
-      
       {/* IMAGE */}
       <div
         className="w-full min-h-[350px] border-4 border-primary-orange mt-10 rounded-lg flex flex-col items-center justify-center bg-white overflow-hidden relative"
@@ -268,7 +265,6 @@ export default function Index() {
         />
       </div>
 
-
       {showButtonSearch && (
         <Button
           className="mt-5 w-full py-2 px-5 font-semibold text-base rounded-lg"
@@ -280,7 +276,7 @@ export default function Index() {
 
       {isError && (
         <div className="text-xl text-primary-red font-bold text-center mt-10">
-          Yah gagal deteksi makanan nih 😔, Yuk Coba run lagi
+          Yah gagal deteksi makanan nih 😔, Yuk Coba anbil foto atau cari lagi
         </div>
       )}
 

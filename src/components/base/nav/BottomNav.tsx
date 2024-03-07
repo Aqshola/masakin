@@ -32,24 +32,21 @@ export default function BottomNav() {
   }
 
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
-    
     const uploadedFile = e.currentTarget.files;
     if (!cameraContext) return;
-    if (!uploadedFile) return;
+    if (uploadedFile?.length == 0 || !uploadedFile) return;
     const imageFile = uploadedFile[0];
-
-    const validImage=isImageFile(imageFile)
-    if(!validImage){
-      toastContext?.create('Upload foto aja ya')
+    const validImage = isImageFile(imageFile);
+    if (!validImage) {
+      toastContext?.create("Upload foto aja ya");
     }
 
-    toastContext?.create("Memuat foto...") || "";
+    const toast = toastContext?.create("Memuat foto...") || "";
     cameraContext?.setLoading(true);
-    const dataUpload = await getUploadImageData(imageFile)
+
+    const dataUpload = await getUploadImageData(imageFile);
     cameraContext.setCamera(dataUpload.base64File, dataUpload.urlImage);
     cameraContext?.setLoading(false);
-
-    
 
     if (pathname != "/cari") {
       router.push("/cari");
