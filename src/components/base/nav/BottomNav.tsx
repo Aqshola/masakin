@@ -38,7 +38,8 @@ export default function BottomNav() {
     const imageFile = uploadedFile[0];
     const validImage = isImageFile(imageFile);
     if (!validImage) {
-      toastContext?.create("Upload foto aja ya");
+      toastContext?.create("Unggah foto aja ya");
+      return;
     }
 
     const toast = toastContext?.create("Memuat foto...") || "";

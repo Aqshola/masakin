@@ -154,6 +154,7 @@ export default function Index() {
 
     if (!validImage) {
       toast?.create("Unggah gambar aja yaa");
+      return;
     }
 
     setLoadImage(true);
