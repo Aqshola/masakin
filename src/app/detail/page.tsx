@@ -55,9 +55,14 @@ export default function Index({ searchParams }: Param) {
       <h1 className="text-xl font-semibold text-primary-softblack ">
         Resep Cookpad
       </h1>
+      {!isLoading && !dataView && (
+        <div>
+          <h3 className="text-xl text-center mt-20">Yah, resepnya hilang 😔</h3>
+        </div>
+      )}
       {isLoading && (
         <div className="mt-28 w-full text-center">
-          <p className="text-lg font-semibold">Loading...</p>
+          <p className="text-lg font-semibold">Memuat...</p>
         </div>
       )}
       {!isLoading && dataView && (

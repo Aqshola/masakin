@@ -13,7 +13,7 @@ export const animatePageIn = () => {
     }).to(transitionElement, {
       xPercent: 0,
       opacity: 1,
-      duration: 0.8,
+      duration: 0.5,
     });
   }
 };
@@ -26,7 +26,7 @@ export const animatePageOut = (href: string, router: AppRouterInstance) => {
 
     tl.to(animationWrapper, {
       xPercent: 100,
-      duration: 0.8,
+      duration: 0.5,
       onComplete: () => {
         router.push(href);
       },
