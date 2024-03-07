@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Poppins, Ubuntu } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
 import Provider from "@/components/wrapper/layout/Provider";
