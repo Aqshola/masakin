@@ -41,3 +41,8 @@ next-env.d.ts
 **/public/worker**
 **/public/fallback**
 **/public/precache**
+# Sentry Config File
+.sentryclirc
+
+# Sentry Config File
+.sentryclirc

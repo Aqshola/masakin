@@ -11,6 +11,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.2.0",
     "@heroicons/react": "^2.1.1",
+    "@sentry/nextjs": "^7.105.0",
     "@serwist/next": "^8.4.4",
     "@serwist/precaching": "^8.4.4",
     "@serwist/sw": "^8.4.4",
