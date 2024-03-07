@@ -13,6 +13,5 @@ Stack Using
 - Animation ✅
 - Handling Error  ✅
 - PWA (IMPROVE FULL OFFLINE)
-- Analytics
-- Sentry
+- Sentry ✅
 - Handle delete bookmark ✅

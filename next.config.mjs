@@ -1,7 +1,7 @@
 import {withSentryConfig} from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 import withSerwistInit from "@serwist/next";
-import createNextIntlPlugin from "next-intl/plugin";
+
 
 const nextConfig = {
   images: {
@@ -18,9 +18,9 @@ const withSerwist = withSerwistInit({
   additionalPrecacheEntries: ["/detail"],
   disable: true,
 });
-const withNextIntl = createNextIntlPlugin();
 
-export default withSentryConfig(withNextIntl(withSerwist(nextConfig)), {
+
+export default withSentryConfig(withSerwist(nextConfig), {
 // For all available options, see:
 // https://github.com/getsentry/sentry-webpack-plugin#options
 
