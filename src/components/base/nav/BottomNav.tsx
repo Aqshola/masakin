@@ -14,6 +14,7 @@ import { ChangeEvent, useContext, useRef } from "react";
 import { CameraContext } from "@/contexts/camera/CameraContext";
 import { ToastContext } from "@/contexts/toast/ToastContext";
 import { getUploadImageData } from "@/utils/client/flow";
+import { isImageFile } from "@/utils/validation";
 
 //SHOULD USE INSIDE COMPONENT UNDER CAMERA CONTEXT
 export default function BottomNav() {
@@ -31,14 +32,19 @@ export default function BottomNav() {
   }
 
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
-    const toast = toastContext?.create("Loading image...") || "";
+    
     const uploadedFile = e.currentTarget.files;
     if (!cameraContext) return;
     if (!uploadedFile) return;
-
-    cameraContext?.setLoading(true);
-
     const imageFile = uploadedFile[0];
+
+    const validImage=isImageFile(imageFile)
+    if(!validImage){
+      toastContext?.create('Upload foto aja ya')
+    }
+
+    toastContext?.create("Memuat foto...") || "";
+    cameraContext?.setLoading(true);
     const dataUpload = await getUploadImageData(imageFile)
     cameraContext.setCamera(dataUpload.base64File, dataUpload.urlImage);
     cameraContext?.setLoading(false);

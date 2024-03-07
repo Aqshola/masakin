@@ -13,6 +13,7 @@ import { Loading } from "@/type/loading";
 import { ImageState } from "@/type/image";
 import { base64ToImage, getPresistentState, getUploadImageData, setPresistentState } from "@/utils/client/flow";
 import { ToastContext } from "@/contexts/toast/ToastContext";
+import { isImageFile } from "@/utils/validation";
 
 
 type PresistentState={
@@ -24,6 +25,7 @@ type PresistentState={
 
 export default function Index() {
   //CONTEXT
+  const toast=useContext(ToastContext)
   const cameraContext = useContext(CameraContext);
   // REF
   const refInputPictureHidden = useRef<HTMLInputElement | null>(null);
@@ -146,10 +148,17 @@ export default function Index() {
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
     if (!uploadedFile) return;
-
     setLoadImage(true)
-    
     const currentImageFile=uploadedFile[0]
+
+    const validImage=isImageFile(currentImageFile)
+
+    if(!validImage){
+      toast?.create("Upload foto aja ya")
+      setLoadImage(false)
+      return 
+    }
+
     const uploadData=await getUploadImageData(currentImageFile)
     
     setCurrentImage({
@@ -255,6 +264,7 @@ export default function Index() {
           type="file"
           className="hidden"
           ref={refInputPictureHidden}
+          accept="image/*"
         />
       </div>
 
