@@ -3,6 +3,7 @@
 import Toast from "@/components/base/toast/Toast";
 import { animateToastOut } from "@/libs/animation";
 import React, { createContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 type ToastData = {
   key: string;
@@ -23,7 +24,7 @@ export default function ToastProvider(props: Props) {
   const [listToast, setListToast] = useState<Array<ToastData>>([]);
 
   function createToast(label: string, autoClose = true) {
-    const key = crypto.randomUUID();
+    const key = uuidv4();
     const newToast: ToastData = {
       key,
       label,

@@ -11,15 +11,19 @@ import ProgressBar from "@/components/base/loader/Progress";
 import { CameraContext } from "@/contexts/camera/CameraContext";
 import { Loading } from "@/type/loading";
 import { ImageState } from "@/type/image";
-import { base64ToImage, getPresistentState, getUploadImageData, setPresistentState } from "@/utils/client/flow";
+import {
+  base64ToImage,
+  getPresistentState,
+  getUploadImageData,
+  setPresistentState,
+} from "@/utils/client/flow";
 
-
-type PresistentState={
+type PresistentState = {
   currentImage: ImageState | undefined;
   dataRecipe: GenerativeResponse;
   showButtonSearch: boolean;
-  listCookpadRecipe: RecipeCookpadMini[]
-}
+  listCookpadRecipe: RecipeCookpadMini[];
+};
 
 export default function Index() {
   //CONTEXT
@@ -46,7 +50,6 @@ export default function Index() {
   const [showFormImage, setShowFormImage] = useState<boolean>(false);
   const [showButtonSearch, setShowButtonSearch] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
-
 
   //HANDLE LOADING STATE
   useEffect(() => {
@@ -83,7 +86,7 @@ export default function Index() {
   useEffect(() => {
     let timeout = setTimeout(() => {
       if (dataRecipe) {
-        const savedPresistent:PresistentState = {
+        const savedPresistent: PresistentState = {
           currentImage,
           dataRecipe,
           showButtonSearch,
@@ -122,8 +125,6 @@ export default function Index() {
     }
   }, [cameraContext, cameraContext?.load]);
 
-  
-
   function handleOpenCamera() {
     if (!refInputCamera) return;
     refInputCamera.current?.click();
@@ -141,19 +142,18 @@ export default function Index() {
 
   async function handleUploadPicture(e: ChangeEvent<HTMLInputElement>) {
     const uploadedFile = e.currentTarget.files;
-    if (!uploadedFile) return;
+    if (!uploadedFile || uploadedFile.length == 0) return;
 
-    setLoadImage(true)
-    
-    const currentImageFile=uploadedFile[0]
-    const uploadData=await getUploadImageData(currentImageFile)
+    setLoadImage(true);
 
-    
+    const currentImageFile = uploadedFile[0];
+    const uploadData = await getUploadImageData(currentImageFile);
+
     setCurrentImage({
       file: uploadData.base64File,
       url: uploadData.urlImage,
     });
-    
+
     setLoadImage(false);
     setShowFormImage(false);
     setShowButtonSearch(true);
@@ -264,7 +264,7 @@ export default function Index() {
 
       {isError && (
         <div className="text-xl text-primary-red font-bold text-center mt-10">
-          Yah gagal deteksi makanan nih 😔, Yuk Coba run lagi
+          Yah gagal deteksi makanan nih 😔, Yuk Coba anbil foto atau cari lagi
         </div>
       )}
 
